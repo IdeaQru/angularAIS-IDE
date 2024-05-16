@@ -1,0 +1,7 @@
+.marker-popup ul {
+  list-style: none;
+  padding: 0;
+}
+.marker-popup li {
+  margin: 5px 0;
+}
