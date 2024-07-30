@@ -1,7 +1,44 @@
-<!-- app/dashboard/dashboard.component.html -->
-<div class="container-fluid py-4">
-  <app-main></app-main>
-  <footer class="footer py-4">
-    <app-footer></app-footer>
-  </footer>
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <mat-form-field appearance="fill" style="width: 100%;">
+        <mat-label style="color: black;">Select Zone Type</mat-label>
+        <mat-select style="color: black;" (selectionChange)="onZoneTypeChange($event.value)">
+          <mat-option value="polygon">Polygon Zone</mat-option>
+          <mat-option value="circle">Circle Zone</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-md-4" *ngIf="selectedZoneType === 'polygon'">
+      <mat-form-field appearance="fill" style="width: 100%;">
+        <mat-label style="color: black;">Select Polygon Zone</mat-label>
+        <mat-select style="color: black;" (selectionChange)="onZoneChange($event.value)">
+          <mat-option style="color: black;" *ngFor="let zone of polygonZones" [value]="zone">{{ zone.properties?.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-md-4" *ngIf="selectedZoneType === 'circle'">
+      <mat-form-field appearance="fill" style="width: 100%;">
+        <mat-label style="color: black;">Select Circle Zone</mat-label>
+        <mat-select style="color: black;" (selectionChange)="onZoneChange($event.value)">
+          <mat-option style="color: black;" *ngFor="let zone of circleZones" [value]="zone">{{ zone.properties?.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-md-12 col-md-8 d-flex justify-content-center" >
+      <apx-chart [series]="pieChartOptions.series" [chart]="pieChartOptions.chart" [title]="pieChartOptions.title" [labels]="pieChartOptions.labels"></apx-chart>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <apx-chart [series]="barChartOptions.series" [chart]="barChartOptions.chart" [title]="barChartOptions.title" [xaxis]="barChartOptions.xaxis"></apx-chart>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <apx-chart [series]="lineChartOptions.series" [chart]="lineChartOptions.chart" [title]="lineChartOptions.title" [xaxis]="lineChartOptions.xaxis"></apx-chart>
+    </div>
+  </div>
 </div>

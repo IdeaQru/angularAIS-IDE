@@ -1,0 +1,78 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <mat-form-field appearance="fill" style="width: 100%;">
+        <mat-label style="color: black;">Select Zone Type</mat-label>
+        <mat-select style="color: black;" (selectionChange)="onZoneTypeChange($event.value)">
+          <mat-option value="polygon">Polygon Zone</mat-option>
+          <mat-option value="circle">Circle Zone</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-md-4">
+      <mat-form-field appearance="fill" style="width: 100%;" *ngIf="selectedZoneType === 'polygon'">
+        <mat-label style="color: black;">Select Polygon Zone</mat-label>
+        <mat-select style="color: black;" (selectionChange)="onZoneChange($event.value)">
+          <mat-option style="color: black;" *ngFor="let zone of polygonZones" [value]="zone">{{ zone.properties?.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill" style="width: 100%;" *ngIf="selectedZoneType === 'circle'">
+        <mat-label style="color: black;">Select Circle Zone</mat-label>
+        <mat-select style="color: black;" (selectionChange)="onZoneChange($event.value)">
+          <mat-option style="color: black;" *ngFor="let zone of circleZones" [value]="zone">{{ zone.properties?.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <h3>Ships in Selected Zone: {{ filteredShips.data.length }}</h3>
+      <mat-form-field appearance="fill">
+        <mat-label style="color: black;">Rows per page</mat-label>
+        <mat-select style="color: black;" (selectionChange)="onPageSizeChange($event.value)" [(value)]="pageSize">
+          <mat-option style="color: black;" *ngFor="let size of [10, 25, 100, 250]" [value]="size">{{ size }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <table mat-table [dataSource]="filteredShips" matSort class="mat-elevation-z8">
+        <ng-container matColumnDef="mmsi">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>MMSI</th>
+          <td mat-cell *matCellDef="let ship">{{ ship.mmsi }}</td>
+        </ng-container>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <td mat-cell *matCellDef="let ship">{{ ship.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="lat">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Latitude</th>
+          <td mat-cell *matCellDef="let ship">{{ ship.lat }}</td>
+        </ng-container>
+        <ng-container matColumnDef="lon">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Longitude</th>
+          <td mat-cell *matCellDef="let ship">{{ ship.lon }}</td>
+        </ng-container>
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+          <td mat-cell *matCellDef="let ship">{{ ship.type }}</td>
+        </ng-container>
+        <ng-container matColumnDef="timestamp">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Timestamp</th>
+          <td mat-cell *matCellDef="let ship">{{ ship.timestamp }}</td>
+        </ng-container>
+        <ng-container matColumnDef="destination">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Destination</th>
+          <td mat-cell *matCellDef="let ship">{{ ship.destination }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator [length]="filteredShips.data.length"
+                     [pageSize]="pageSize"
+                     [pageSizeOptions]="[10, 25, 100, 250]"
+                     (page)="onPageChange($event)">
+      </mat-paginator>
+      <button mat-raised-button color="primary" (click)="downloadPDF()">Download PDF</button>
+    </div>
+  </div>
+</div>
+
+

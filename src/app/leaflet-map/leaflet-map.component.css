@@ -3,5 +3,55 @@
   padding: 0;
 }
 .marker-popup li {
-  margin: 5px 0;
+  margin: 3px 0;
+}
+/* Penyesuaian untuk label di SweetAlert2 */
+.swal2-popup {
+  font-size: 1.6rem; /* Sesuaikan ukuran font popup */
+}
+
+.swal2-input, .swal2-select, .swal2-textarea {
+  margin-top: 0.4em; /* Spasi antara label dan input */
+  margin-bottom: 1.2em; /* Spasi antara input dan input berikutnya */
+}
+
+/* Style khusus untuk label dalam SweetAlert */
+.swal2-html-container label {
+  display: block;
+  margin-bottom: 0.2em; /* Jarak antara label dan input */
+  font-weight: bold; /* Menebalkan font label */
+  color: #ffffff; /* Warna font label */
+}
+
+/* Penyesuaian untuk footer dalam SweetAlert2 */
+.swal2-footer {
+  margin-top: 1.2em; /* Spasi antara form dan footer */
+  color: #ffffff; /* Warna font footer */
+  font-style: italic; /* Style font footer */
+}
+/* Mengatur ukuran dan posisi peta */
+#map {
+  width: 100%;
+  height: 600px;
+}
+
+/* Gaya untuk kontrol zoom */
+.leaflet-control-zoom {
+  margin-top: 10px;
+}
+
+/* Gaya untuk popup */
+.leaflet-popup-content {
+  font-size: 14px;
+}
+
+/* Gaya untuk marker kapal */
+.leaflet-marker-icon {
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+/* Menambahkan gaya hover untuk marker */
+.leaflet-marker-icon:hover {
+  border-color: yellow;
 }

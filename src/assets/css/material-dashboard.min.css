@@ -92,6 +92,19 @@
   --bs-link-hover-color: #e91e63;
   --bs-code-color: #d63384;
   --bs-highlight-bg: #fcf8e3;
+  --text-color: black;
+}
+/* Component-specific stylesheet with ::ng-deep if styles are encapsulated */
+::ng-deep .leaflet-control-layers label {
+  background-color: rgb(54, 61, 54); /* This will affect all Leaflet maps in your application */
+}
+
+/* OR */
+
+/* Global stylesheet without ::ng-deep */
+.leaflet-control-layers label {
+  background-color: rgb(54, 61, 54); /* This will affect all Leaflet maps in your application */
+
 }
 *,
 :after,
@@ -23030,4 +23043,4 @@ pre[class*="language-"] {
   .ps {
     overflow: auto !important;
   }
-} 
+}

@@ -1,0 +1,8 @@
+  spark1!: ChartOptions;
+  spark2!: ChartOptions;
+  spark3!: ChartOptions;
+  monthlyEarningsOpt!: ChartOptions;
+  optionsArea!: ChartOptions;
+  optionsBar!: ChartOptions;
+  optionDonut!: ChartOptions;
+  optionsLine!: ChartOptions;

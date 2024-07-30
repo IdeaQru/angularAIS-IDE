@@ -1,16 +1,23 @@
-// navbar.component.ts
-
-import { Component,Output ,EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { NotificationService,Notification } from '../services/notification.service';
 import { AppService } from '../app.service';
-
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
+  notifications: Notification[] = [];
 
-  constructor(private appService: AppService) {}
+
+
+constructor(private notificationService: NotificationService,private appService: AppService ) {}
+
+  ngOnInit() {
+    this.notificationService.notifications$.subscribe((notifications: Notification[]) => {
+      this.notifications = notifications;
+    });
+  }
   callToggleSidenav() {
     // Panggil fungsi toggleSidenav dengan id "sidenav-main"
    return this.appService.callToggleSidenav();
@@ -27,5 +34,4 @@ export class NavbarComponent {
   closeFixedPlugin() {
     this.appService.closeFixedPlugin();
   }
-
 }

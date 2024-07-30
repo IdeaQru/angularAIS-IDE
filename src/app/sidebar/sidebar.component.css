@@ -1,0 +1,13 @@
+/* styles.css atau styles.scss */
+
+.mat-form-field {
+  color: black !important; /* Warna teks di dalam form field */
+}
+
+.mat-select-value-text {
+  color: black !important; /* Warna teks yang dipilih di dropdown */
+}
+
+.mat-option-text {
+  color: black !important; /* Warna teks di opsi dropdown */
+}

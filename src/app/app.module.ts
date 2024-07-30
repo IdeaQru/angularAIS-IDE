@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -15,6 +16,17 @@ import { TablesComponent } from './tables/tables.component';
 import { NewfiturComponent } from './newfitur/newfitur.component';
 import { LeafletMapComponent } from './leaflet-map/leaflet-map.component';
 import { DataService } from './data.service';
+import { ChartComponent } from './chart/chart.component';
+import { FormsModule } from '@angular/forms'; // Import FormsModule here
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { NotificationComponent } from './notification/notification.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,18 +38,27 @@ import { DataService } from './data.service';
     DashboardComponent,
     TablesComponent,
     NewfiturComponent,
-    LeafletMapComponent
+    LeafletMapComponent,
+    ChartComponent,
+    NotificationComponent,
 
   ],
   imports: [
     BrowserModule,
-    NgApexchartsModule,
+    NgApexchartsModule, // Import NgApexchartsModule
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    MatSelectModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatFormFieldModule,
+    MatSnackBarModule,
+    MatDialogModule,MatButtonModule
   ],
-  providers: [AppService,DataService
-
-  ],
+  providers: [AppService, DataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

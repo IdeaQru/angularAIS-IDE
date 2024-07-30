@@ -1,166 +1,65 @@
-import { Component, AfterViewInit } from '@angular/core';
-import * as L from 'leaflet';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DataService } from '../data.service';
-
-interface ShipData {
-  _id: number;
-  lon: number;
-  lat: number;
-  createdAt: string;
-  name: string;
-  type: number;
-}
+import { MapService } from '../services/map.service';
 
 @Component({
   selector: 'app-leaflet-map',
   templateUrl: './leaflet-map.component.html',
   styleUrls: ['./leaflet-map.component.css']
 })
-export class LeafletMapComponent implements AfterViewInit {
-  private map!: L.Map;
-  private ships: ShipData[] = [];
+export class LeafletMapComponent implements OnInit, OnDestroy {
+  constructor(
+    private mapService: MapService, private dataService: DataService
+  ) { }
 
-  private shipIcons: { [type: string]: L.Icon } = {
-    'Unspecified': L.icon({
-      iconUrl: 'assets/images/unspecified.png',
-      iconSize: [24, 24],
-      iconAnchor: [12, 12]
-    }),
-    'Fishing': L.icon({
-      iconUrl: 'assets/images/fishing.png',
-      iconSize: [24, 24],
-      iconAnchor: [12, 12]
-    }),
-    'Tanker': L.icon({
-      iconUrl: 'assets/images/tanker.png',
-      iconSize: [24, 24],
-      iconAnchor: [12, 12]
-    }),
-    'Cargo': L.icon({
-      iconUrl: 'assets/images/cargo.png',
-      iconSize: [24, 24],
-      iconAnchor: [12, 12]
-    }),
-    'Tug': L.icon({
-      iconUrl: 'assets/images/tug.png',
-      iconSize: [24, 24],
-      iconAnchor: [12, 12]
-    }),
-    'Highspeed': L.icon({
-      iconUrl: 'assets/images/highspeed.png',
-      iconSize: [24, 24],
-      iconAnchor: [12, 12]
-    }),
-    'Passenger': L.icon({
-      iconUrl: 'assets/images/passenger.png',
-      iconSize: [24, 24],
-      iconAnchor: [12, 12]
-    }),
-    'Pleasure': L.icon({
-      iconUrl: 'assets/images/pleasure.png',
-      iconSize: [24, 24],
-      iconAnchor: [12, 12]
-    })
-  };
-
-  constructor(private dataService: DataService) { }
-
-  ngAfterViewInit(): void {
-    this.initMap();
-    this.loadShipData();
-    this.addSeaArea();
+  ngOnInit(): void {
+    this.mapService.initializeMap('map');
+    this.initializeCanvas();
+    this.loadAndDisplayData();
   }
 
-  private initMap(): void {
-    this.map = L.map('map', {
-      center: [-7.18643057415128, 112.71902662227242],
-      zoom: 8
-    });
-
-    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap'
-    });
-
-    tiles.addTo(this.map);
+  ngOnDestroy(): void {
+    this.mapService.destroyMap(); // Pastikan peta dihancurkan saat komponen di-destroy
   }
 
-
-  private loadShipData(): void {
-    this.dataService.getData().subscribe(data => {
-      console.log('Data from API:', data);
-      if (Array.isArray(data)) {
-        this.ships = data;
-        this.addMarkers();
-      } else {
-        console.error('Invalid data format:', data);
+  private initializeCanvas(): void {
+    const canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
+    if (canvas) {
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      if (context) {
+        this.drawOnCanvas(context);
       }
-    }, error => {
-      console.error('Error loading data:', error);
-    });
+    }
   }
 
-  private addMarkers(): void {
-    if (!this.ships || this.ships.length === 0) {
-      console.warn('No ships data available to add markers.');
-      return;
+  private drawOnCanvas(context: CanvasRenderingContext2D): void {
+    // Contoh menggambar di canvas
+    context.fillStyle = 'green';
+    context.fillRect(10, 10, 150, 100);
+
+    // Baca data gambar dari canvas
+    const imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+
+    // Contoh manipulasi data gambar
+    for (let i = 0; i < imageData.data.length; i += 4) {
+      imageData.data[i] = 255 - imageData.data[i];       // Red
+      imageData.data[i + 1] = 255 - imageData.data[i + 1]; // Green
+      imageData.data[i + 2] = 255 - imageData.data[i + 2]; // Blue
     }
 
-    this.ships.forEach(ship => {
-      console.log('Adding marker for ship:', ship);
-      const icon = this.getIconForShipType(ship.type);
-      const marker = L.marker([ship.lat, ship.lon], { icon }).addTo(this.map);
-      const popupContent = `
-        <div class="marker-popup">
-          <h3>${ship.name}</h3>
-          <ul>
-            <li>ID: ${ship._id}</li>
-            <li>Name: ${ship.name}</li>
-            <li>Type: ${ship.type}</li>
-            <li>Coordinates: ${ship.lat}, ${ship.lon}</li>
-            <li>Created At: ${new Date(ship.createdAt).toLocaleString()}</li>
-          </ul>
-        </div>
-      `;
-      marker.bindPopup(popupContent);
+    // Tulis kembali data gambar ke canvas
+    context.putImageData(imageData, 0, 0);
+  }
+
+  private loadAndDisplayData(): void {
+    this.dataService.getShipsData().subscribe({
+      next: (data) => {
+        this.mapService.addMarkers(data);
+        this.mapService.addHeatMap(data);
+      },
+      error: (error) => {
+        console.error('Failed to load data:', error);
+      }
     });
-  }
-
-
-  private addSeaArea(): void {
-    const seaArea = L.polygon([
-      [-7.185, 112.718],  // Top-left
-      [-7.185, 112.720],  // Top-right
-      [-7.188, 112.720],  // Bottom-right
-      [-7.188, 112.718]   // Bottom-left
-    ], {
-      color: 'blue',
-      fillColor: '#3388ff',
-      fillOpacity: 0.5
-    }).addTo(this.map);
-
-    seaArea.bindPopup("Area Asset");
-  }
-
-  private getIconForShipType(type: number): L.Icon {
-    if ((type === 31 || type === 32) && type >=20 && type<=28) {
-      return this.shipIcons['Tug'];
-    } else if (type >= 40 && type <= 49) {
-      return this.shipIcons['Highspeed'];
-    } else if (type === 39) {
-      return this.shipIcons['Pleasure'];
-    } else if (type >= 50 && type <= 69  ) {
-      return this.shipIcons['Passenger'];
-    } else if (type === 30) {
-      return this.shipIcons['Fishing'];
-    } else if (type === 60) {
-      return this.shipIcons['Tanker'];
-    } else if (type === 70) {
-      return this.shipIcons['Cargo'];
-    } else if (type === 80) {
-      return this.shipIcons['Tanker'];
-    } else {
-      return this.shipIcons['Unspecified'];
-    }
   }
 }

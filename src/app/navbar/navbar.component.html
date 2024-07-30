@@ -17,16 +17,13 @@
         </li>
       </ol>
       <h6 class="font-weight-bolder mb-0">Dashboard</h6>
-   
     </nav>
- 
     <div
       class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4"
       id="navbar"
     >
       <ul class="navbar-nav ms-auto">
         <li class="nav-item px-3 d-flex align-items-center">
-          <!-- Template Angular -->
           <a
             href="javascript:;"
             class="nav-link text-body p-0"
@@ -70,11 +67,18 @@
             aria-expanded="false"
           >
             <i class="fa fa-bell cursor-pointer"></i>
+            <span class="badge badge-pill bg-danger">{{ notifications.length }}</span>
           </a>
           <ul
             class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4"
             aria-labelledby="dropdownMenuButton"
-          ></ul>
+          >
+            <li *ngFor="let notification of notifications">
+              <a class="dropdown-item">
+                <strong>{{ notification.timestamp }}</strong>: {{ notification.message }}
+              </a>
+            </li>
+          </ul>
         </li>
         <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
           <a
