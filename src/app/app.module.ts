@@ -27,6 +27,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NotificationComponent } from './notification/notification.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { LoginComponent } from './login/login.component';
+import { MainlayoutComponent } from './mainlayout/mainlayout.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -41,6 +43,8 @@ import { MatButtonModule } from '@angular/material/button';
     LeafletMapComponent,
     ChartComponent,
     NotificationComponent,
+    LoginComponent,
+    MainlayoutComponent,
 
   ],
   imports: [
