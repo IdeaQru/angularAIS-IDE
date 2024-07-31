@@ -2,7 +2,7 @@
 /android
 /ios
 # Compiled output
-/dist
+/www
 /tmp
 /out-tsc
 /bazel-out
