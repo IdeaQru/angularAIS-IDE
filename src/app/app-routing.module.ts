@@ -3,17 +3,36 @@ import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TablesComponent } from './tables/tables.component';
 import { NewfiturComponent } from './newfitur/newfitur.component';
+import { NotificationComponent } from './notification/notification.component';
+import { LoginComponent } from './login/login.component';
+import { AuthGuard } from './guards/auth.guard';
+import { MainlayoutComponent } from './mainlayout/mainlayout.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'tables', component: TablesComponent },
-  { path: 'newfitur', component: NewfiturComponent },
-  // ... tambahkan rute lainnya sesuai kebutuhan
+  {
+    path: 'login',
+    component: LoginComponent,
+    children: [
+      { path: '', component: LoginComponent }
+    ]
+  },
+  {
+    path: '',
+    component: MainlayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'tables', component: TablesComponent },
+      { path: 'newfitur', component: NewfiturComponent },
+      { path: 'notifications', component: NotificationComponent },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    ]
+  },
+  { path: '**', redirectTo: 'login' }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

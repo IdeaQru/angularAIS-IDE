@@ -6,7 +6,7 @@ import { catchError, Observable, tap, throwError } from 'rxjs';
   providedIn: 'root'
 })
 export class ShapeService {
-  private apiUrl = 'http://localhost:3000/api/shapes'; // URL API backend
+  private apiUrl = 'http://103.24.48.92:3000/api/shapes'; // URL API backend
 
   constructor(private http: HttpClient) { }
 

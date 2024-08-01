@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CircleZoneService {
-  private apiUrl = 'http://localhost:3000/api/shapes/circle'; // Update this URL as per your API endpoint
+  private apiUrl = 'http://103.24.48.92:3000/api/shapes/circle'; // Update this URL as per your API endpoint
 
   constructor(private http: HttpClient) {}
 

@@ -20,7 +20,7 @@ export interface ShipData {
   providedIn: 'root'
 })
 export class DataService {
-  private apiUrl = 'http://localhost:3000/api/ships';  // Ganti dengan URL server API Anda
+  private apiUrl = 'http://103.24.48.92:3000/api/ships';  // Ganti dengan URL server API Anda
   private previousShipsInZones: Set<string> = new Set();
   private socket: any;
 

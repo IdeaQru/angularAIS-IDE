@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class SocketService {
   private socket: Socket;
-  private readonly url: string = 'http://localhost:3000'; // Sesuaikan dengan URL server Anda
+  private readonly url: string = 'http://103.24.48.92:3000'; // Sesuaikan dengan URL server Anda
 
   constructor() {
     this.socket = io(this.url);

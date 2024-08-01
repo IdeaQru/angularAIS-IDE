@@ -15,8 +15,8 @@ interface Ship {
   providedIn: 'root'
 })
 export class ShapeDataHandlerService {
-  private apiUrl = 'http://localhost:3000/api/shapes';
-  private shipsApiUrl = 'http://localhost:3000/api/ships';
+  private apiUrl = 'http://103.24.48.92:3000/api/shapes';
+  private shipsApiUrl = 'http://103.24.48.92:3000/api/ships';
   private shipsCache!: Ship[];
 
   constructor(private http: HttpClient) {}
