@@ -23,12 +23,17 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NotificationComponent } from './notification/notification.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { LoginComponent } from './login/login.component';
 import { MainlayoutComponent } from './mainlayout/mainlayout.component';
+import { MatInputModule } from '@angular/material/input';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -60,7 +65,9 @@ import { MainlayoutComponent } from './mainlayout/mainlayout.component';
     MatSortModule,
     MatFormFieldModule,
     MatSnackBarModule,
-    MatDialogModule,MatButtonModule
+    MatDialogModule,MatButtonModule, MatListModule,
+    MatIconModule,
+    MatCardModule,MatInputModule
   ],
   providers: [AppService, DataService],
   bootstrap: [AppComponent]

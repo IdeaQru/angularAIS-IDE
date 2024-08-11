@@ -1,6 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
 import { DataService } from '../data.service';
 import { MapService } from '../services/map.service';
+import { SocketService } from '../services/socket.service';
 
 @Component({
   selector: 'app-leaflet-map',
@@ -8,58 +11,78 @@ import { MapService } from '../services/map.service';
   styleUrls: ['./leaflet-map.component.css']
 })
 export class LeafletMapComponent implements OnInit, OnDestroy {
+  private dataSubscription?: Subscription;
+  private aisUpdateSubscription?: Subscription;
+  private shapeUpdateSubscription?: Subscription;
+  searchQuery: string = '';
+  private zones: any[] = [];  // Array untuk menyimpan data zona
+
   constructor(
-    private mapService: MapService, private dataService: DataService
+    private mapService: MapService,
+    private dataService: DataService,
+    private socketService: SocketService
   ) { }
 
   ngOnInit(): void {
     this.mapService.initializeMap('map');
-    this.initializeCanvas();
+    this.setupRealtimeUpdates();
     this.loadAndDisplayData();
+    // this.loadZones();  // Memuat data zona
   }
 
   ngOnDestroy(): void {
-    this.mapService.destroyMap(); // Pastikan peta dihancurkan saat komponen di-destroy
-  }
-
-  private initializeCanvas(): void {
-    const canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
-    if (canvas) {
-      const context = canvas.getContext('2d', { willReadFrequently: true });
-      if (context) {
-        this.drawOnCanvas(context);
-      }
-    }
-  }
-
-  private drawOnCanvas(context: CanvasRenderingContext2D): void {
-    // Contoh menggambar di canvas
-    context.fillStyle = 'green';
-    context.fillRect(10, 10, 150, 100);
-
-    // Baca data gambar dari canvas
-    const imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
-
-    // Contoh manipulasi data gambar
-    for (let i = 0; i < imageData.data.length; i += 4) {
-      imageData.data[i] = 255 - imageData.data[i];       // Red
-      imageData.data[i + 1] = 255 - imageData.data[i + 1]; // Green
-      imageData.data[i + 2] = 255 - imageData.data[i + 2]; // Blue
-    }
-
-    // Tulis kembali data gambar ke canvas
-    context.putImageData(imageData, 0, 0);
+    this.mapService.destroyMap();
+    this.socketService.disconnect();
+    this.dataSubscription?.unsubscribe();
+    this.aisUpdateSubscription?.unsubscribe();
+    this.shapeUpdateSubscription?.unsubscribe();
   }
 
   private loadAndDisplayData(): void {
-    this.dataService.getShipsData().subscribe({
+    this.dataSubscription = this.dataService.getShipsDataPeriodically().subscribe({
       next: (data) => {
         this.mapService.addMarkers(data);
         this.mapService.addHeatMap(data);
       },
-      error: (error) => {
-        console.error('Failed to load data:', error);
+      error: (error) => console.error('Failed to load data:', error)
+    });
+  }
+
+  private setupRealtimeUpdates(): void {
+    this.aisUpdateSubscription = this.socketService.onAisDataUpdate().pipe(
+      throttleTime(1000)
+    ).subscribe(data => {
+      this.mapService.addMarkers([data]);
+      this.mapService.addHeatMap([data]);
+    });
+
+    this.shapeUpdateSubscription = this.socketService.onShapeDataUpdate().subscribe(data => {
+      this.mapService.addMarkers([data]);
+      this.mapService.addHeatMap([data]);
+    });
+  }
+
+
+
+  searchShip(): void {
+    if (!this.searchQuery.trim()) {
+      console.warn('Search query is empty');
+      return;
+    }
+
+    this.dataService.getShipsData().subscribe(ships => {
+      const foundShip = ships.find(ship =>
+        ship.name && (
+          ship.mmsi.toString() === this.searchQuery.trim() ||
+          ship.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        )
+      );
+
+      if (foundShip) {
+        this.mapService.focusOnShip(foundShip);
       }
     });
   }
+
+
 }

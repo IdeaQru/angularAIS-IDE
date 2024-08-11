@@ -1,10 +1,15 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <h2>Notifications</h2>
-      <ul>
-        <li *ngFor="let notification of notifications">
-          <strong>{{ notification.timestamp }}:</strong> {{ notification.message }}
+      <h2 style="color: #fff;">Notifications</h2>
+      <ul class="notification-list">
+        <li *ngFor="let notification of notifications" class="notification-item">
+          <div class="notification-content">
+            <strong>{{ notification.timestamp | date:'short' }}:</strong> {{ notification.message }}
+          </div>
+          <button mat-icon-button matTooltip="Delete" (click)="deleteNotification(notification)" class="delete-button">
+            <mat-icon>delete</mat-icon>
+          </button>
         </li>
       </ul>
     </div>

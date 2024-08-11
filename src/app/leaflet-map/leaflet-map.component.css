@@ -1,57 +1,25 @@
-.marker-popup ul {
-  list-style: none;
-  padding: 0;
-}
-.marker-popup li {
-  margin: 3px 0;
-}
-/* Penyesuaian untuk label di SweetAlert2 */
-.swal2-popup {
-  font-size: 1.6rem; /* Sesuaikan ukuran font popup */
-}
-
-.swal2-input, .swal2-select, .swal2-textarea {
-  margin-top: 0.4em; /* Spasi antara label dan input */
-  margin-bottom: 1.2em; /* Spasi antara input dan input berikutnya */
-}
-
-/* Style khusus untuk label dalam SweetAlert */
-.swal2-html-container label {
-  display: block;
-  margin-bottom: 0.2em; /* Jarak antara label dan input */
-  font-weight: bold; /* Menebalkan font label */
-  color: #ffffff; /* Warna font label */
-}
-
-/* Penyesuaian untuk footer dalam SweetAlert2 */
-.swal2-footer {
-  margin-top: 1.2em; /* Spasi antara form dan footer */
-  color: #ffffff; /* Warna font footer */
-  font-style: italic; /* Style font footer */
-}
-/* Mengatur ukuran dan posisi peta */
+/* leaflet-map.component.css */
 #map {
+  position: relative;
+  height: 400px;  /* Sesuaikan berdasarkan kebutuhan Anda */
+}
+
+.search-container {
+  position: absolute;
+  top: 15%;  /* Pusatkan secara vertikal */
+  left: 35%;  /* Pusatkan secara horizontal */
+  transform: translate(-90%, -10%);  /* Ajustasikan agar tepat di tengah */
+  width: 300px;
+  z-index: 1000;  /* Pastikan berada di atas peta */
+}
+
+mat-form-field {
   width: 100%;
-  height: 600px;
+  background-color: rgba(255, 255, 255, 0.5);  /* Latar belakang transparan */
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* Gaya untuk kontrol zoom */
-.leaflet-control-zoom {
-  margin-top: 10px;
-}
-
-/* Gaya untuk popup */
-.leaflet-popup-content {
-  font-size: 14px;
-}
-
-/* Gaya untuk marker kapal */
-.leaflet-marker-icon {
-  border-radius: 50%;
-  border: 2px solid white;
-}
-
-/* Menambahkan gaya hover untuk marker */
-.leaflet-marker-icon:hover {
-  border-color: yellow;
+input.mat-input-element {
+  color: #000;  /* Warna teks, sesuaikan jika perlu */
 }

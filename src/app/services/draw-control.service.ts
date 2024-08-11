@@ -90,7 +90,7 @@ export class DrawControlService {
 
           if (layer) {
             layer.addTo(drawnItems);
-            this.bindPopupToLayer(layer, shape.properties.name, shape.properties.status, shape.properties.description, shape.coordinates);
+            this.bindPopupToLayer(layer, shape.properties.mmsi,shape.properties.name, shape.properties.status, shape.properties.description, shape.coordinates);
             layer.shapeId = shape._id; // Ensure shapeId is set here if not done yet
           }
         });
@@ -98,7 +98,7 @@ export class DrawControlService {
       error => console.error('Error loading shapes:', error)
     );
  }
-  private bindPopupToLayer(layer: any, name: string, status: string, description: string, coordinates: any): void {
+  private bindPopupToLayer(layer: any,mmsi:number, name: string, status: string, description: string, coordinates: any): void {
     let content = `<div><strong>Name:</strong> ${name}</div>
                    <div><strong>Status:</strong> ${status}</div>
                    <div><strong>Description:</strong> ${description}</div>`;

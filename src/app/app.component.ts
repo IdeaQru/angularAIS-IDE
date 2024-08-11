@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
   monitorShips() {
     this.dataService.getShipsDataPeriodically().subscribe(ships => {
       this.ships = ships;
-      this.dataService.checkShipsInZones(this.polygonZones, this.circleZones, this.ships);
+      this.dataService.checkShipsInZones(this.polygonZones, this.circleZones);
     });
   }
 }

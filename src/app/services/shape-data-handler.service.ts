@@ -15,8 +15,9 @@ interface Ship {
   providedIn: 'root'
 })
 export class ShapeDataHandlerService {
-  private apiUrl = 'http://103.24.48.92:3000/api/shapes';
-  private shipsApiUrl = 'http://103.24.48.92:3000/api/ships';
+  private apiUrl = 'http://localhost:3000/api/shapes';
+  private shipsApiUrl = 'http://localhost:3000/api/ships';
+
   private shipsCache!: Ship[];
 
   constructor(private http: HttpClient) {}
@@ -28,26 +29,41 @@ export class ShapeDataHandlerService {
       title: 'Enter Shape Data',
       html: this.getHtmlForSwal(),
       focusConfirm: false,
-      preConfirm: () => this.getShapeData()
+      preConfirm: () => {
+        const mmsi = (document.getElementById('mmsi') as HTMLInputElement).value;
+        const name = (document.getElementById('name') as HTMLInputElement).value;
+        const status = (document.getElementById('status') as HTMLSelectElement).value;
+        const description = (document.getElementById('description') as HTMLTextAreaElement).value;
+
+        if (!mmsi || isNaN(Number(mmsi))) {
+          Swal.showValidationMessage('MMSI is required and must be a number');
+          return null; // Jika validasi gagal, kembalikan null
+        }
+
+        return { mmsi: Number(mmsi), name, status, description };
+      }
     }).then((result) => {
       if (result.value) {
-        const { name, status, description } = result.value;
-        const dataToSend = this.createDataObject(name, status, description, layer, coordinates);
+        const { mmsi, name, status, description } = result.value;
+        const dataToSend = this.createDataObject(mmsi, name, status, description, layer, coordinates);
         this.sendDataToServer(dataToSend);
       }
     });
   }
 
+
   // HTML for SweetAlert prompt
   getHtmlForSwal(): string {
-    return '<input id="name" class="swal2-input" placeholder="Name">' +
+    return '<input id="mmsi" class="swal2-input" type="number" placeholder="mmsi" min="0">' +
+           '<input id="name" class="swal2-input" placeholder="Name">' +
            '<select id="status" class="swal2-input">' +
-           '<option value="">Choose Status</option>' +
-           '<option value="Warning">Warning</option>' +
-           '<option value="Danger">Danger</option>' +
+             '<option value="">Choose Status</option>' +
+             '<option value="Warning">Warning</option>' +
+             '<option value="Danger">Danger</option>' +
            '</select>' +
            '<textarea id="description" class="swal2-textarea" placeholder="Description"></textarea>';
   }
+
 
   // Retrieve data from the SweetAlert dialog
   getShapeData(): any {
@@ -59,7 +75,7 @@ export class ShapeDataHandlerService {
   }
 
   // Create a data object for the zone
-  private createDataObject(name: string, status: string, description: string, layer: any, coordinates: any): any {
+  private createDataObject(mmsi:number,name: string, status: string, description: string, layer: any, coordinates: any): any {
     const color = this.getColorBasedOnStatus(status);
     if (layer.setStyle) {
       layer.setStyle({ color });
@@ -68,6 +84,7 @@ export class ShapeDataHandlerService {
     return {
       type: layer instanceof L.Circle ? 'circle' : 'polygon',
       properties: {
+        mmsi,
         name,
         status,
         description,
