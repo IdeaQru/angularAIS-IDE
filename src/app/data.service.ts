@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client';
 import { interval, Observable, Subject, switchMap } from 'rxjs';
 import { CircleZoneHandler } from './services/circle-zone-handler';
 import { PolygonZoneHandler } from './services/polygon-zone-handler';
-import { NotificationService, Notification } from './services/notification.service';
+import { NotificationService } from './services/notification.service';
 
 export interface ShipData {
   mmsi: number;
@@ -26,8 +26,9 @@ export interface Zone {
   providedIn: 'root'
 })
 export class DataService {
-  private apiUrl = 'http://localhost:3000/api/ships';  // Adjust this to your API endpoint
-  private socketUrl = 'http://localhost:3000';  // Adjust to your WebSocket server URL
+  private apiUrl = 'http://localhost:3000/api/ships';  // Ubah dengan API endpoint Anda
+  private zonesApiUrl = 'http://localhost:3000/api/shapes'; // API endpoint untuk zona
+  private socketUrl = 'http://localhost:3000';  // Ubah dengan URL WebSocket server Anda
   private socket!: Socket;
   public shipDataStream = new Subject<ShipData[]>();
 
@@ -44,35 +45,22 @@ export class DataService {
     return this.http.get<ShipData[]>(this.apiUrl);
   }
 
+  getZonesData(): Observable<Zone[]> {
+    return this.http.get<Zone[]>(this.zonesApiUrl);
+  }
+
   getShipsDataPeriodically(): Observable<ShipData[]> {
     return interval(30000).pipe(switchMap(() => this.getShipsData()));
   }
 
-  private initializeWebSocketConnection() {
-    this.socket = io(this.socketUrl, {
-      path: '/socket.io'
-    });
-    this.socket.on('connect', () => console.log('Connected to WebSocket server!'));
-    this.socket.on('aisData', (data: ShipData[]) => {
-      console.log('Received ship data via WebSocket:', data);
-      this.shipDataStream.next(data);
-    });
-    this.socket.on('disconnect', () => console.log('Disconnected from WebSocket server'));
-    this.socket.on('error', (error: any) => console.error('WebSocket error:', error));
-  }
 
-  checkShipsInZones(zones: Zone[], ships: ShipData[]): void {
-    zones.forEach(zone => {
+
+  checkShipsInZones(polygonZones: Zone[], circleZones: Zone[], ships: ShipData[]): void {
+    polygonZones.forEach(zone => {
       ships.forEach(ship => {
-        let inZone = false;
-        if (zone.type === 'circle') {
-          inZone = this.circleZoneHandler.isShipInZone(ship, zone);
-        } else if (zone.type === 'polygon') {
-          inZone = this.polygonZoneHandler.isShipInZone(ship, zone);
-        }
-
-        if (inZone) {
-          const notificationMessage = `Ship ${ship.name} (${ship.mmsi}) entered ${zone.properties?.name || 'a zone'}.`;
+        if (this.polygonZoneHandler.isShipInZone(ship, zone)) {
+          const notificationMessage = `Ship ${ship.name} (${ship.mmsi}) entered ${zone.properties?.name || 'a polygon zone'}.`;
+          console.log(notificationMessage);
           this.notificationService.addNotification({
             message: notificationMessage,
             timestamp: new Date().toLocaleTimeString()
@@ -80,6 +68,41 @@ export class DataService {
         }
       });
     });
+
+    circleZones.forEach(zone => {
+      ships.forEach(ship => {
+        if (this.circleZoneHandler.isShipInZone(ship, zone)) {
+          const notificationMessage = `Ship ${ship.name} (${ship.mmsi}) entered ${zone.properties?.name || 'a circle zone'}.`;
+          console.log(notificationMessage);
+          this.notificationService.addNotification({
+            message: notificationMessage,
+            timestamp: new Date().toLocaleTimeString()
+          });
+        }
+      });
+    });
+  }
+  private initializeWebSocketConnection() {
+    this.socket = io(this.socketUrl, {
+      path: '/socket.io'
+    });
+    this.socket.on('connect', () => console.log('Connected to WebSocket server!'));
+
+    this.socket.on('aisData', (data: ShipData[]) => {
+      console.log('Received ship data via WebSocket:', data);
+      this.shipDataStream.next(data);
+
+      this.getZonesData().subscribe(zones => {
+        const polygonZones = zones.filter(zone => zone.type === 'polygon');
+        const circleZones = zones.filter(zone => zone.type === 'circle');
+
+        this.checkShipsInZones(polygonZones, circleZones, data);
+      });
+    });
+
+
+    this.socket.on('disconnect', () => console.log('Disconnected from WebSocket server'));
+    this.socket.on('error', (error: any) => console.error('WebSocket error:', error));
   }
 
   getShipDataStream(): Observable<ShipData[]> {

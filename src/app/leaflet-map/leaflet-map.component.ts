@@ -71,7 +71,7 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
     }
 
     this.dataService.getShipsData().subscribe(ships => {
-      const foundShip = ships.find(ship =>
+      const foundShip = ships.find((ship: { name: string; mmsi: { toString: () => string; }; }) =>
         ship.name && (
           ship.mmsi.toString() === this.searchQuery.trim() ||
           ship.name.toLowerCase().includes(this.searchQuery.toLowerCase())

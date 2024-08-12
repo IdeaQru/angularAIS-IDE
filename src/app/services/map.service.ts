@@ -106,7 +106,7 @@ export class MapService {
   }
 // map.service.ts
 focusOnShip(ship: ShipData): void {
-  this.map.setView([ship.lat, ship.lon], 22);
+  this.map.setView([ship.lat, ship.lon], 18);
   // Tambahkan logika untuk menyorot atau membuka popup jika diperlukan
 }
 

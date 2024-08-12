@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from './data.service';
 import { CircleZoneHandler } from './services/circle-zone-handler';
 import { PolygonZoneHandler } from './services/polygon-zone-handler';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -26,14 +27,28 @@ export class AppComponent implements OnInit {
   }
 
   loadZones() {
-    this.polygonZoneHandler.loadPolygonZones().subscribe(zones => this.polygonZones = zones);
-    this.circleZoneHandler.loadCircleZones().subscribe(zones => this.circleZones = zones);
+    this.polygonZoneHandler.loadPolygonZones().subscribe(zones => {
+      this.polygonZones = zones;
+    });
+
+    this.circleZoneHandler.loadCircleZones().subscribe(zones => {
+      this.circleZones = zones;
+    });
   }
 
   monitorShips() {
-    this.dataService.getShipsDataPeriodically().subscribe(ships => {
+    // Menggunakan combineLatest untuk menunggu kedua zona dan data kapal
+    combineLatest([
+      this.polygonZoneHandler.loadPolygonZones(),
+      this.circleZoneHandler.loadCircleZones(),
+      this.dataService.getShipsDataPeriodically()
+    ]).subscribe(([polygonZones, circleZones, ships]) => {
+      this.polygonZones = polygonZones;
+      this.circleZones = circleZones;
       this.ships = ships;
-      this.dataService.checkShipsInZones(this.polygonZones, this.circleZones);
+
+      // Panggil checkShipsInZones setelah data siap
+      this.dataService.checkShipsInZones(this.polygonZones, this.circleZones, this.ships);
     });
   }
 }
