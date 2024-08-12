@@ -14,6 +14,7 @@ export class AppComponent implements OnInit {
   polygonZones: any[] = [];
   circleZones: any[] = [];
   ships: any[] = [];
+  previousShips: any[] = []; // Menyimpan data kapal sebelumnya
 
   constructor(
     private dataService: DataService,
@@ -47,8 +48,13 @@ export class AppComponent implements OnInit {
       this.circleZones = circleZones;
       this.ships = ships;
 
-      // Panggil checkShipsInZones setelah data siap
-      this.dataService.checkShipsInZones(this.polygonZones, this.circleZones, this.ships);
+      // Panggil checkShipsInZones hanya jika ada kapal baru atau aplikasi baru dibuka
+      if (this.previousShips.length === 0 || this.ships.length !== this.previousShips.length) {
+        this.dataService.checkShipsInZones(this.polygonZones, this.circleZones, this.ships);
+      }
+
+      // Perbarui previousShips dengan data kapal terbaru
+      this.previousShips = [...this.ships];
     });
   }
 }
