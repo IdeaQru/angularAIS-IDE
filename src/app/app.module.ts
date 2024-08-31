@@ -33,6 +33,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { LoginComponent } from './login/login.component';
 import { MainlayoutComponent } from './mainlayout/mainlayout.component';
 import { MatInputModule } from '@angular/material/input';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { MatInputModule } from '@angular/material/input';
     NotificationComponent,
     LoginComponent,
     MainlayoutComponent,
+    RegisterComponent,
 
   ],
   imports: [

@@ -23,6 +23,18 @@
       id="navbar"
     >
       <ul class="navbar-nav ms-auto">
+        <!-- Halo, [nama pengguna] -->
+        <li class="nav-item px-3 d-flex align-items-center">
+          <span class="nav-link text-body p-0">Halo, {{ userName }}</span>
+        </li>
+
+        <!-- Tombol Logout -->
+        <li class="nav-item px-3 d-flex align-items-center">
+          <a href="javascript:;" class="nav-link text-body p-0" (click)="logout()">
+            <i class="fa fa-sign-out cursor-pointer"></i> Logout
+          </a>
+        </li>
+
         <li class="nav-item px-3 d-flex align-items-center">
           <a
             href="javascript:;"

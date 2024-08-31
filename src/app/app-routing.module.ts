@@ -7,6 +7,7 @@ import { NotificationComponent } from './notification/notification.component';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 import { MainlayoutComponent } from './mainlayout/mainlayout.component';
+import { RegisterComponent } from './register/register.component';
 
 const routes: Routes = [
   {
@@ -14,6 +15,13 @@ const routes: Routes = [
     component: LoginComponent,
     children: [
       { path: '', component: LoginComponent }
+    ]
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    children: [
+      { path: '', component: RegisterComponent }
     ]
   },
   {

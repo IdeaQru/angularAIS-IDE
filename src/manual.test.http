@@ -1,0 +1,10 @@
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "fiqru",
+  "password" : "fiqru123",
+  "email" : "Qruuu"
+  "role" : "user"
+
+}

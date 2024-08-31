@@ -1,28 +1,36 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private authenticated = false;
 
-  login(email: string, password: string): Observable<boolean> {
-    // Implementasi login yang sebenarnya
-    // Misalnya, memverifikasi email dan password dengan server
-    if (email === 'test@example.com' && password === 'password') {
-      this.authenticated = true;
-      return of(true);
-    } else {
-      return of(false);
-    }
+  private apiUrl = 'http://localhost:3000/api'; // Sesuaikan dengan URL backend Anda
+
+  constructor(private http: HttpClient) {}
+
+  register(userData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, userData);
   }
 
-  logout() {
-    this.authenticated = false;
+  login(credentials: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login`, credentials);
   }
 
-  isAuthenticated(): boolean {
-    return this.authenticated;
+  logout(): void {
+    localStorage.removeItem('token');
+  }
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('token'); // Mengembalikan true jika token ada di localStorage
+  }
+
+  getUserName(): string {
+    return localStorage.getItem('userName') || '';
+  }
+  saveUserName(userName: string): void {
+    localStorage.setItem('userName', userName);
   }
 }
