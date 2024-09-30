@@ -12,6 +12,8 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
@@ -19,23 +21,15 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/typings",
-       "./src"
-    ],
-    "types": [
-      "leaflet"
-    ],
-    "lib": [
-      "ES2022",
-      "dom"
-    ]
+    "typeRoots": ["./node_modules/@types", "./src/typings", "./src"],
+    "types": ["leaflet"],
+    "lib": ["ES2022", "dom"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictTemplates": true,
+    "strictNullChecks": false,
   }
 }

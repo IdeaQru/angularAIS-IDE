@@ -9,7 +9,7 @@ export class SocketService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io('http://localhost:3000'); // Ensure this URL matches your backend server
+    this.socket = io('http://localhost:3000');
   }
 
   // Use Observable to handle data streams

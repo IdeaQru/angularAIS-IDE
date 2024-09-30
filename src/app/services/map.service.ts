@@ -8,6 +8,9 @@ import { BaseLayerService } from './base-layer.service';
 import { DrawControlService } from './draw-control.service';
 import * as moment from 'moment';
 import 'moment-duration-format';
+import { SocketService } from './socket.service'; // Service untuk WebSocket
+import { DataService } from '../data.service'; // Service untuk polling data API
+
 
 export interface ShipData {
   mmsi: number;
@@ -16,6 +19,9 @@ export interface ShipData {
   name: string;
   type: number;
   timestamp: string;
+  courseOverGround?: number;
+  speedOverGround?: number;
+  heading?: number;
   destination?: string;
 }
 
@@ -28,8 +34,9 @@ export class MapService {
   private drawnItems: L.FeatureGroup = new L.FeatureGroup();
   private markersLayer: L.LayerGroup = L.layerGroup();
   private heatmapLayer?: L.Layer;
+  private refreshInterval: any; 
 
-  constructor(private drawControlService: DrawControlService) { }
+  constructor(private drawControlService: DrawControlService,private socketService: SocketService,private dataService: DataService) { }
 
   initializeMap(containerId: string): L.Map {
     this.map = L.map(containerId, {
@@ -42,19 +49,41 @@ export class MapService {
     this.addBaseLayers();
     this.map.addLayer(this.drawnItems);
     this.map.addLayer(this.markersLayer);
-    this.setupDrawControl();
+    this.startAutoUpdate();
+    this.setupRealtimeUpdates();
+        this.setupDrawControl();
     this.drawControlService.loadShapes(this.map, this.drawnItems);
+    
     return this.map;
   }
-
+  private startAutoUpdate(): void {
+    this.refreshInterval = setInterval(() => {
+      this.loadAndDisplayData();  // Memuat dan memperbarui data secara periodik
+    }, 5000);
+  }
   private addBaseLayers(): void {
     const defaultLayer = BaseLayerService.baseLayers['Ocean'];
     defaultLayer.addTo(this.map);
     this.layersControl = L.control.layers(BaseLayerService.baseLayers).addTo(this.map);
   }
-
+  private loadAndDisplayData(): void {
+    this.dataService.getShipsDataPeriodically().subscribe({
+      next: (data) => {
+        this.addMarkers(data);
+        this.addHeatMap(data);
+      },
+      error: (error) => console.error('Failed to load data:', error)
+    });
+  }
+  private setupRealtimeUpdates(): void {
+    this.socketService.onAisDataUpdate().subscribe(data => {
+      this.addMarkers([data]);
+      this.addHeatMap([data]);
+    });
+  }
   private setupDrawControl(): void {
     const drawControl = DrawControlService.createDrawControl(this.drawnItems);
+
     this.map.addControl(drawControl);
     this.drawControlService.handleDrawEvents(this.map, this.drawnItems);
   }
@@ -62,13 +91,33 @@ export class MapService {
   addMarkers(data: ShipData[]): void {
     this.markersLayer.clearLayers();
     data.forEach(ship => {
-      const icon = IconService.getIconForShipType(ship.type);
+      const iconUrl = IconService.getIconForShipType(ship.type).options.iconUrl;
+  
+      // Gunakan heading jika tersedia, jika tidak gunakan courseOverGround
+      const shipBearing = ship.heading || ship.courseOverGround || 0;
+  
+      // Buat HTML div dengan ikon kapal di dalamnya dan rotasi dengan CSS
+      const iconHtml = `
+        <div class="rotating-ship" style="transform: rotate(${shipBearing}deg);">
+          <img src="${iconUrl}" width="24" height="24" />
+        </div>
+      `;
+  
+      const icon = L.divIcon({
+        className: 'custom-ship-icon',
+        html: iconHtml,
+        iconSize: [24, 24], // Ukuran yang sama dengan L.Icon
+        iconAnchor: [12, 12] // Titik jangkar di tengah ikon
+      });
+  
       const marker = L.marker([ship.lat, ship.lon], { icon }).bindPopup(this.createPopupContent(ship));
       this.markersLayer.addLayer(marker);
     });
   }
+  
+  
 
-  addHeatMap(data: any[]): void {
+  addHeatMap(data: ShipData[]): void {
     if (this.heatmapLayer) {
       this.map.removeLayer(this.heatmapLayer);
     }
@@ -87,6 +136,9 @@ export class MapService {
           <li>Type: ${ship.type}</li>
           <li>Coordinates: ${ship.lat}, ${ship.lon}</li>
           <li>Destination: ${ship.destination || 'N/A'}</li>
+          <li>Course Over Ground: ${ship.courseOverGround || 'N/A'}</li>
+          <li>Speed Over Ground: ${ship.speedOverGround || 'N/A'}</li>
+          <li>Heading: ${ship.heading || 'N/A'}</li>
           <li>Last Received: ${timeAgo}</li>
         </ul>
       </div>

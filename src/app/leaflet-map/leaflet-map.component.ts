@@ -27,6 +27,7 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
     this.mapService.initializeMap('map');
     this.setupRealtimeUpdates();
     this.loadAndDisplayData();
+    
     // this.loadZones();  // Memuat data zona
   }
 
@@ -60,6 +61,7 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
       this.mapService.addMarkers([data]);
       this.mapService.addHeatMap([data]);
     });
+    console.log(this.aisUpdateSubscription);
   }
 
 
