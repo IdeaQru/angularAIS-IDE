@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
 import { DataService } from '../data.service';
@@ -16,6 +16,7 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
   private shapeUpdateSubscription?: Subscription;
   searchQuery: string = '';
   private zones: any[] = [];  // Array untuk menyimpan data zona
+  isFullscreen: boolean = false;
 
   constructor(
     private mapService: MapService,
@@ -31,6 +32,8 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
     // this.loadZones();  // Memuat data zona
   }
 
+
+ 
   ngOnDestroy(): void {
     this.mapService.destroyMap();
     this.socketService.disconnect();
@@ -66,25 +69,8 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
 
 
 
-  searchShip(): void {
-    if (!this.searchQuery.trim()) {
-      console.warn('Search query is empty');
-      return;
-    }
-
-    this.dataService.getShipsData().subscribe(ships => {
-      const foundShip = ships.find((ship: { name: string; mmsi: { toString: () => string; }; }) =>
-        ship.name && (
-          ship.mmsi.toString() === this.searchQuery.trim() ||
-          ship.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-        )
-      );
-
-      if (foundShip) {
-        this.mapService.focusOnShip(foundShip);
-      }
-    });
-  }
 
 
+
+  
 }

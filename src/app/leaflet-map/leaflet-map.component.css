@@ -1,25 +1,5 @@
-/* leaflet-map.component.css */
+/* Leaflet Map Container */
 #map {
   position: relative;
-  height: 400px;  /* Sesuaikan berdasarkan kebutuhan Anda */
-}
-
-.search-container {
-  position: absolute;
-  top: 15%;  /* Pusatkan secara vertikal */
-  left: 35%;  /* Pusatkan secara horizontal */
-  transform: translate(-90%, -10%);  /* Ajustasikan agar tepat di tengah */
-  width: 300px;
-  z-index: 1000;  /* Pastikan berada di atas peta */
-}
-
-mat-form-field {
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.5);  /* Latar belakang transparan */
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-input.mat-input-element {
-  color: #000;  /* Warna teks, sesuaikan jika perlu */
+  height: 400px;  /* Adjust this height as needed */
 }

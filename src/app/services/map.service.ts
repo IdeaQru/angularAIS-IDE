@@ -8,9 +8,8 @@ import { BaseLayerService } from './base-layer.service';
 import { DrawControlService } from './draw-control.service';
 import * as moment from 'moment';
 import 'moment-duration-format';
-import { SocketService } from './socket.service'; // Service untuk WebSocket
-import { DataService } from '../data.service'; // Service untuk polling data API
-
+import { CoordinateControlService } from './add-coordinate.service';
+import { SearchControlService } from './searchcontrol.service';
 
 export interface ShipData {
   mmsi: number;
@@ -34,9 +33,15 @@ export class MapService {
   private drawnItems: L.FeatureGroup = new L.FeatureGroup();
   private markersLayer: L.LayerGroup = L.layerGroup();
   private heatmapLayer?: L.Layer;
-  private refreshInterval: any; 
-
-  constructor(private drawControlService: DrawControlService,private socketService: SocketService,private dataService: DataService) { }
+  private coordinateControlService: CoordinateControlService;
+  private searchConrolService: SearchControlService | undefined;
+  constructor(
+    private drawControlService: DrawControlService,
+    private searchControlService: SearchControlService // Inject the SearchControlService
+  ) { 
+    this.coordinateControlService = new CoordinateControlService(); // Initialize CoordinateControlService
+    
+  }
 
   initializeMap(containerId: string): L.Map {
     this.map = L.map(containerId, {
@@ -49,41 +54,24 @@ export class MapService {
     this.addBaseLayers();
     this.map.addLayer(this.drawnItems);
     this.map.addLayer(this.markersLayer);
-    this.startAutoUpdate();
-    this.setupRealtimeUpdates();
-        this.setupDrawControl();
+    this.setupDrawControl();
     this.drawControlService.loadShapes(this.map, this.drawnItems);
-    
+
+    // Add the coordinate control and search control to the map
+    this.coordinateControlService.addCoordinateControl(this.map);
+    this.searchControlService.addSearchControl(this.map, this.focusOnShip.bind(this)); 
+
     return this.map;
   }
-  private startAutoUpdate(): void {
-    this.refreshInterval = setInterval(() => {
-      this.loadAndDisplayData();  // Memuat dan memperbarui data secara periodik
-    }, 5000);
-  }
+  
   private addBaseLayers(): void {
     const defaultLayer = BaseLayerService.baseLayers['Ocean'];
     defaultLayer.addTo(this.map);
     this.layersControl = L.control.layers(BaseLayerService.baseLayers).addTo(this.map);
   }
-  private loadAndDisplayData(): void {
-    this.dataService.getShipsDataPeriodically().subscribe({
-      next: (data) => {
-        this.addMarkers(data);
-        this.addHeatMap(data);
-      },
-      error: (error) => console.error('Failed to load data:', error)
-    });
-  }
-  private setupRealtimeUpdates(): void {
-    this.socketService.onAisDataUpdate().subscribe(data => {
-      this.addMarkers([data]);
-      this.addHeatMap([data]);
-    });
-  }
+
   private setupDrawControl(): void {
     const drawControl = DrawControlService.createDrawControl(this.drawnItems);
-
     this.map.addControl(drawControl);
     this.drawControlService.handleDrawEvents(this.map, this.drawnItems);
   }
@@ -117,7 +105,7 @@ export class MapService {
   
   
 
-  addHeatMap(data: ShipData[]): void {
+  addHeatMap(data: any[]): void {
     if (this.heatmapLayer) {
       this.map.removeLayer(this.heatmapLayer);
     }
