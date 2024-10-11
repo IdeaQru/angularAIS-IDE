@@ -10,6 +10,8 @@ import * as moment from 'moment';
 import 'moment-duration-format';
 import { CoordinateControlService } from './add-coordinate.service';
 import { SearchControlService } from './searchcontrol.service';
+import { ShapeDataHandlerService } from './shape-data-handler.service';
+import { PlaybackService } from './playback.service'; // Import PlaybackService
 
 export interface ShipData {
   mmsi: number;
@@ -31,16 +33,19 @@ export class MapService {
   private map!: L.Map;
   private layersControl!: L.Control.Layers;
   private drawnItems: L.FeatureGroup = new L.FeatureGroup();
-  private markersLayer: L.LayerGroup = L.layerGroup();
   private heatmapLayer?: L.Layer;
   private coordinateControlService: CoordinateControlService;
   private searchConrolService: SearchControlService | undefined;
   constructor(
     private drawControlService: DrawControlService,
-    private searchControlService: SearchControlService // Inject the SearchControlService
-  ) { 
+    private searchControlService: SearchControlService, // Inject the SearchControlService
+    private shapeDataHandlerService: ShapeDataHandlerService,
+  private playbackService: PlaybackService
+
+
+  ) {
     this.coordinateControlService = new CoordinateControlService(); // Initialize CoordinateControlService
-    
+
   }
 
   initializeMap(containerId: string): L.Map {
@@ -53,17 +58,15 @@ export class MapService {
 
     this.addBaseLayers();
     this.map.addLayer(this.drawnItems);
-    this.map.addLayer(this.markersLayer);
     this.setupDrawControl();
-    this.drawControlService.loadShapes(this.map, this.drawnItems);
-
+    this.playbackService.initializePlayback(this.map);
     // Add the coordinate control and search control to the map
     this.coordinateControlService.addCoordinateControl(this.map);
-    this.searchControlService.addSearchControl(this.map, this.focusOnShip.bind(this)); 
-
+    this.searchControlService.addSearchControl(this.map, this.focusOnShip.bind(this));
+    this.drawControlService.loadShapes(this.map, this.drawnItems);
     return this.map;
   }
-  
+
   private addBaseLayers(): void {
     const defaultLayer = BaseLayerService.baseLayers['Ocean'];
     defaultLayer.addTo(this.map);
@@ -73,85 +76,26 @@ export class MapService {
   private setupDrawControl(): void {
     const drawControl = DrawControlService.createDrawControl(this.drawnItems);
     this.map.addControl(drawControl);
-    this.drawControlService.handleDrawEvents(this.map, this.drawnItems);
-  }
 
-  addMarkers(data: ShipData[]): void {
-    this.markersLayer.clearLayers();
-    data.forEach(ship => {
-      const iconUrl = IconService.getIconForShipType(ship.type).options.iconUrl;
-  
-      // Gunakan heading jika tersedia, jika tidak gunakan courseOverGround
-      const shipBearing = ship.heading || ship.courseOverGround || 0;
-  
-      // Buat HTML div dengan ikon kapal di dalamnya dan rotasi dengan CSS
-      const iconHtml = `
-        <div class="rotating-ship" style="transform: rotate(${shipBearing}deg);">
-          <img src="${iconUrl}" width="24" height="24" />
-        </div>
-      `;
-  
-      const icon = L.divIcon({
-        className: 'custom-ship-icon',
-        html: iconHtml,
-        iconSize: [24, 24], // Ukuran yang sama dengan L.Icon
-        iconAnchor: [12, 12] // Titik jangkar di tengah ikon
-      });
-  
-      const marker = L.marker([ship.lat, ship.lon], { icon }).bindPopup(this.createPopupContent(ship));
-      this.markersLayer.addLayer(marker);
+    // Listen for drawing events to trigger the SweetAlert popup
+    this.map.on(L.Draw.Event.CREATED, (event: any) => {
+      const layer = event.layer;
+      this.drawnItems.addLayer(layer);
+      // Trigger the SweetAlert popup using ShapeDataHandlerService
+      this.shapeDataHandlerService.promptForLayerData(layer);
     });
   }
-  
-  
 
-  addHeatMap(data: any[]): void {
-    if (this.heatmapLayer) {
-      this.map.removeLayer(this.heatmapLayer);
-    }
-    const heatData: L.HeatLatLngTuple[] = data.map(ship => [ship.lat, ship.lon, 1.0]);
-    this.heatmapLayer = L.heatLayer(heatData, { radius: 35, blur: 15, maxZoom: 17 }).addTo(this.map);
-  }
 
-  private createPopupContent(ship: ShipData): string {
-    const timeAgo = this.getTimeAgo(ship.timestamp);
-    return `
-      <div class="marker-popup">
-        <h3>${ship.name}</h3>
-        <ul>
-          <li>ID: ${ship.mmsi}</li>
-          <li>Name: ${ship.name}</li>
-          <li>Type: ${ship.type}</li>
-          <li>Coordinates: ${ship.lat}, ${ship.lon}</li>
-          <li>Destination: ${ship.destination || 'N/A'}</li>
-          <li>Course Over Ground: ${ship.courseOverGround || 'N/A'}</li>
-          <li>Speed Over Ground: ${ship.speedOverGround || 'N/A'}</li>
-          <li>Heading: ${ship.heading || 'N/A'}</li>
-          <li>Last Received: ${timeAgo}</li>
-        </ul>
-      </div>
-    `;
-  }
 
-  private getTimeAgo(timestamp: string): string {
-    const now = moment();
-    const then = moment(timestamp, 'DD-MM-YYYY HH:mm:ss');
-    const duration = moment.duration(now.diff(then));
-
-    const days = duration.days();
-    const hours = duration.hours();
-    const minutes = duration.minutes();
-
-    return `${days} days ${hours} hours ${minutes} minutes ago`;
-  }
-// map.service.ts
 focusOnShip(ship: ShipData): void {
   this.map.setView([ship.lat, ship.lon], 18);
-  // Tambahkan logika untuk menyorot atau membuka popup jika diperlukan
 }
 
-
-
+// In map.service.ts
+getMapInstance(): L.Map {
+  return this.map;
+}
 
   destroyMap(): void {
     this.map.remove();

@@ -21,13 +21,19 @@ export interface Zone {
   properties?: any;
   coordinates: number[][] | number[][][];
 }
-
+export interface AisLogData {
+  mmsi: number;
+  name: string;
+  logTime: string;
+  details: object[];
+}
 @Injectable({
   providedIn: 'root',
 })
 export class DataService {
   private apiUrl = 'http://localhost:3000/api/ships'; // Ubah dengan API endpoint Anda
   private zonesApiUrl = 'http://localhost:3000/api/shapes'; // API endpoint untuk zona
+  private dataLog = 'http://localhost:3000/api/ais-log';
   private socketUrl = 'http://localhost:3000'; // Ubah dengan URL WebSocket server Anda
   private socket!: Socket;
   public shipDataStream = new Subject<ShipData[]>();
@@ -42,7 +48,9 @@ export class DataService {
   ) {
     this.initializeWebSocketConnection();
   }
-
+  getAisLogData(): Observable<AisLogData[]> {
+    return this.http.get<AisLogData[]>(this.dataLog);
+  }
   getShipsData(): Observable<ShipData[]> {
     return this.http.get<ShipData[]>(this.apiUrl);
   }

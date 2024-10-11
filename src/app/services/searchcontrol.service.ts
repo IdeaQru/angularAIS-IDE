@@ -20,40 +20,48 @@ export class SearchControlService {
     searchInput.type = 'text';
     searchInput.placeholder = 'Enter MMSI or Ship Name';
 
-    // Apply inline styles to the search container to center it at the top
-    searchContainer.style.position = 'absolute';
-    searchContainer.style.top = '10px'; // Position it closer to the top of the map
-    searchContainer.style.left = '50%'; // Center it horizontally
-    searchContainer.style.transform = 'translateX(-50%)'; // Adjust for perfect centering
+    // Inline styles for positioning
     searchContainer.style.width = '320px';
     searchContainer.style.zIndex = '1000';
 
-    // Apply inline styles to the form field to mimic Angular Material
     formField.style.backgroundColor = 'rgba(161, 154, 154, 0)'; // Slightly transparent background
-    formField.style.borderRadius = '12px'; // Rounded corners
-    formField.style.padding = '10px'; // Padding for better spacing
-    formField.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.158)'; // Subtle shadow for depth
+    formField.style.borderRadius = '12px';
+    formField.style.padding = '10px';
+    formField.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.158)';
 
-    // Apply inline styles to the search input
     searchInput.style.width = '100%';
     searchInput.style.padding = '8px';
     searchInput.style.border = 'none';
     searchInput.style.outline = 'none';
     searchInput.style.backgroundColor = 'transparent';
-    searchInput.style.color = '#000'; // Set input text color to white
+    searchInput.style.color = '#000';
     searchInput.style.fontSize = '16px';
 
     L.DomEvent.addListener(searchInput, 'input', () => {
       this.searchShip(searchInput.value, focusOnShip);
     });
 
-    // Add the search container to the map as a control
+    // Create a custom Leaflet control and handle custom positioning for top center
     const SearchControl = L.Control.extend({
       onAdd: () => searchContainer,
-      options: { position: 'topright' }, // Use top-left as a placeholder, but the styles will position it in the center
+      options: { position: 'topleft' }, // Position placeholder, actual position handled below
     });
 
-    new SearchControl().addTo(map);
+    const searchControlInstance = new SearchControl();
+    searchControlInstance.addTo(map);
+
+    // Override the default Leaflet positioning to place the control at the top center
+    const mapContainer = map.getContainer();
+    const containerWidth = mapContainer.clientWidth;
+    searchContainer.style.position = 'absolute';
+    searchContainer.style.top = '10px'; // Adjust vertical position as needed
+    searchContainer.style.left = `${(containerWidth - searchContainer.clientWidth) / 2}px`; // Center it horizontally
+
+    // Recalculate the position on map resize to keep the control centered
+    map.on('resize', () => {
+      const newContainerWidth = map.getContainer().clientWidth;
+      searchContainer.style.left = `${(newContainerWidth - searchContainer.clientWidth) / 2}px`;
+    });
   }
 
   private searchShip(searchQuery: string, focusOnShip: (ship: ShipData) => void): void {

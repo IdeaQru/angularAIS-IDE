@@ -45,24 +45,31 @@ export class IconService {
   };
 
   static getIconForShipType(type: number): L.Icon {
-    if ((type === 31 || type === 32) && type >= 20 && type <= 28) {
-      return this.shipIcons['Tug'];
-    } else if (type >= 40 && type <= 49) {
-      return this.shipIcons['Highspeed'];
-    } else if (type === 39) {
-      return this.shipIcons['Pleasure'];
-    } else if (type >= 50 && type <= 69) {
-      return this.shipIcons['Passenger'];
-    } else if (type === 30) {
-      return this.shipIcons['Fishing'];
-    } else if (type === 60) {
-      return this.shipIcons['Tanker'];
-    } else if (type === 70) {
+    if (type >= 20 && type <= 29) {
       return this.shipIcons['Cargo'];
-    } else if (type === 80) {
+    } else if (type >= 30 && type <= 39) {
+      if (type === 30) {
+        return this.shipIcons['Fishing'];
+      } else if (type === 31 || type === 32) {
+        return this.shipIcons['Tug'];
+      } else if (type === 36) {
+        return this.shipIcons['Pleasure'];
+      } else {
+        return this.shipIcons['Unspecified'];
+      }
+    } else if (type >= 40 && type <= 59) {
+      return this.shipIcons['Highspeed'];
+    } else if (type >= 60 && type <= 69) {
+      return this.shipIcons['Passenger'];
+    } else if (type >= 70 && type <= 79) {
+      return this.shipIcons['Cargo'];
+    } else if (type >= 80 && type <= 89) {
       return this.shipIcons['Tanker'];
+    } else if (type >= 90 && type <= 99) {
+      return this.shipIcons['Unspecified'];
     } else {
       return this.shipIcons['Unspecified'];
     }
   }
+
 }

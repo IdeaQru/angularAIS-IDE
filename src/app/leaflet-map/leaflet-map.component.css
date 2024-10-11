@@ -3,3 +3,72 @@
   position: relative;
   height: 400px;  /* Adjust this height as needed */
 }
+.swal2-container {
+  z-index: 2147483647 !important; /* Ensure it is always above other elements */
+  position: fixed !important; /* Remain fixed even when the map is in fullscreen */
+}
+
+.playback-control-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.playback-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.control-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  margin: 0 10px;
+  cursor: pointer;
+  color: #333;
+  transition: transform 0.2s ease-in-out;
+}
+
+.control-button:hover {
+  transform: scale(1.2);
+  color: #007bff; /* Warna biru saat hover */
+}
+
+.playback-speed {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.speed-slider {
+  width: 150px;
+  margin-left: 10px;
+}
+
+.playback-date-range {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.playback-date-range label {
+  margin: 0 5px;
+}
+
+.date-picker {
+  padding: 5px;
+  margin: 0 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}

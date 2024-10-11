@@ -2,81 +2,82 @@ import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
 import Swal from 'sweetalert2';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-
-interface Ship {
-  name: string;
-  latitude: number;
-  longitude: number;
-}
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShapeDataHandlerService {
   private apiUrl = 'http://localhost:3000/api/shapes';
-  private shipsApiUrl = 'http://localhost:3000/api/ships';
-
-  private shipsCache!: Ship[];
 
   constructor(private http: HttpClient) {}
 
-  // Prompt the user to enter data for a zone
+  /**
+   * Prompts the user to enter data for the shape layer using SweetAlert.
+   * Ensures that the popup remains visible during fullscreen mode.
+   * @param layer - The drawn shape layer (Circle or Polygon)
+   */
   promptForLayerData(layer: any): void {
     const coordinates = layer instanceof L.Circle ? layer.getLatLng() : layer.getLatLngs();
+
     Swal.fire({
       title: 'Enter Shape Data',
+      target: document.body, // Ensures the popup is attached directly to the body element
       html: this.getHtmlForSwal(),
       focusConfirm: false,
-      preConfirm: () => {
-        const mmsi = (document.getElementById('mmsi') as HTMLInputElement).value;
-        const name = (document.getElementById('name') as HTMLInputElement).value;
-        const status = (document.getElementById('status') as HTMLSelectElement).value;
-        const description = (document.getElementById('description') as HTMLTextAreaElement).value;
-
-        if (!mmsi || isNaN(Number(mmsi))) {
-          Swal.showValidationMessage('MMSI is required and must be a number');
-          return null; // Jika validasi gagal, kembalikan null
-        }
-
-        return { mmsi: Number(mmsi), name, status, description };
-      }
+      preConfirm: () => this.getShapeDataFromInput()
     }).then((result) => {
       if (result.value) {
-        const { mmsi, name, status, description } = result.value;
-        const dataToSend = this.createDataObject(mmsi, name, status, description, layer, coordinates);
+        const dataToSend = this.createDataObject(result.value, layer, coordinates);
         this.sendDataToServer(dataToSend);
       }
     });
+
+    // Ensure that the popup is visible during fullscreen
+    this.ensurePopupVisibilityInFullscreen();
   }
 
-
-  // HTML for SweetAlert prompt
-  getHtmlForSwal(): string {
-    return '<input id="mmsi" class="swal2-input" type="number" placeholder="mmsi" min="0">' +
-           '<input id="name" class="swal2-input" placeholder="Name">' +
-           '<select id="status" class="swal2-input">' +
-             '<option value="">Choose Status</option>' +
-             '<option value="Warning">Warning</option>' +
-             '<option value="Danger">Danger</option>' +
-           '</select>' +
-           '<textarea id="description" class="swal2-textarea" placeholder="Description"></textarea>';
-  }
-
-
-  // Retrieve data from the SweetAlert dialog
-  getShapeData(): any {
-    return {
-      name: (document.getElementById('name') as HTMLInputElement).value,
-      status: (document.getElementById('status') as HTMLSelectElement).value,
-      description: (document.getElementById('description') as HTMLTextAreaElement).value
+  /**
+   * Ensures that the SweetAlert popup remains visible even when the map is in fullscreen mode.
+   */
+  private ensurePopupVisibilityInFullscreen(): void {
+    const updatePopupZIndex = () => {
+      const swalContainer = document.querySelector('.swal2-container') as HTMLElement;
+      if (swalContainer) {
+        // Set the z-index to a very high number to ensure visibility during fullscreen
+        swalContainer.style.zIndex = '2147483647'; // Highest z-index possible
+        swalContainer.style.position = 'fixed'; // Make sure it's fixed to always be on top
+      }
     };
+
+    // Listen for all possible fullscreen change events
+    ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'msfullscreenchange'].forEach(eventType => {
+      document.addEventListener(eventType, updatePopupZIndex);
+    });
+
+    // Immediately apply the z-index to ensure visibility
+    updatePopupZIndex();
   }
 
-  // Create a data object for the zone
-  private createDataObject(mmsi:number,name: string, status: string, description: string, layer: any, coordinates: any): any {
-    const color = this.getColorBasedOnStatus(status);
+  /**
+   * Creates the HTML content for the SweetAlert popup.
+   */
+  private getHtmlForSwal(): string {
+    return `
+      <input id="mmsi" class="swal2-input" type="number" placeholder="MMSI" min="0" required>
+      <input id="name" class="swal2-input" placeholder="Name" required>
+      <select id="status" class="swal2-input">
+        <option value="">Choose Status</option>
+        <option value="Warning">Warning</option>
+        <option value="Danger">Danger</option>
+      </select>
+      <textarea id="description" class="swal2-textarea" placeholder="Description"></textarea>
+    `;
+  }
+  private createDataObject(inputData: { mmsi: number; name: string; status: string; description: string }, layer: any, coordinates: any): any {
+    const color = this.getColorBasedOnStatus(inputData.status);
+
     if (layer.setStyle) {
       layer.setStyle({ color });
     }
@@ -84,10 +85,7 @@ export class ShapeDataHandlerService {
     return {
       type: layer instanceof L.Circle ? 'circle' : 'polygon',
       properties: {
-        mmsi,
-        name,
-        status,
-        description,
+        ...inputData,
         color,
         opacity: 0.8
       },
@@ -95,7 +93,9 @@ export class ShapeDataHandlerService {
     };
   }
 
-  // Determine the color based on status
+  /**
+   * Determines the color based on the status of the shape.
+   */
   private getColorBasedOnStatus(status: string): string {
     switch (status) {
       case 'Warning': return '#FFFF00'; // Yellow
@@ -104,7 +104,9 @@ export class ShapeDataHandlerService {
     }
   }
 
-  // Get coordinates data
+  /**
+   * Extracts coordinates data from the shape layer.
+   */
   private getCoordinatesData(layer: any, coordinates: any): any {
     if (layer instanceof L.Circle) {
       return { lat: coordinates.lat, lng: coordinates.lng, radius: layer.getRadius() };
@@ -112,15 +114,33 @@ export class ShapeDataHandlerService {
       return coordinates.map((latlngs: L.LatLng[]) => latlngs.map(latlng => ({ lat: latlng.lat, lng: latlng.lng })));
     }
   }
+  /**
+   * Retrieves the shape data from the SweetAlert input fields.
+   */
+  private getShapeDataFromInput(): { mmsi: number; name: string; status: string; description: string } | null {
+    const mmsi = (document.getElementById('mmsi') as HTMLInputElement).value;
+    const name = (document.getElementById('name') as HTMLInputElement).value;
+    const status = (document.getElementById('status') as HTMLSelectElement).value;
+    const description = (document.getElementById('description') as HTMLTextAreaElement).value;
 
-  // Send data to the server
-  private sendDataToServer(data: any): void {
-    this.http.post(this.apiUrl, data).subscribe({
-      next: response => console.log('Data sent successfully', response),
-      error: error => console.error('Error sending data', error)
-    });
+    // Validate the input data
+    if (!mmsi || isNaN(Number(mmsi))) {
+      Swal.showValidationMessage('MMSI is required and must be a number');
+      return null;
+    }
+    return { mmsi: Number(mmsi), name, status, description };
   }
 
-
-
+  /**
+   * Sends the shape data to the server using HTTP POST.
+   */
+  private sendDataToServer(data: any): void {
+    this.http.post(this.apiUrl, data).pipe(
+      tap(response => console.log('Data sent successfully:', response)),
+      catchError(error => {
+        console.error('Error sending data:', error);
+        return throwError(error);
+      })
+    ).subscribe();
+  }
 }
