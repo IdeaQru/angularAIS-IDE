@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:3000/api'; // Sesuaikan dengan URL backend Anda
+  private apiUrl = 'http://165.154.208.232:3000/api'; // Sesuaikan dengan URL backend Anda
 
   constructor(private http: HttpClient) {}
 
