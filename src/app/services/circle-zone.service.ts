@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CircleZoneService {
-  private apiUrl = 'http://165.154.208.232:3000/api/shapes/circle'; // Update this URL as per your API endpoint
+  private apiUrl = `${environment.apiUrl}/ships/shapes/circle`;  // Ambil URL API dari environment
 
   constructor(private http: HttpClient) {}
 

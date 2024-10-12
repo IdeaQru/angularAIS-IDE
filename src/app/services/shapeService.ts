@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShapeService {
-  private apiUrl = 'http://165.154.208.232:3000/api/shapes'; // URL API backend
+  private apiUrl = `${environment.apiUrl}/ships/shapes`;  // Ambil URL API dari environment
+; // URL API backend
 
   constructor(private http: HttpClient) { }
 

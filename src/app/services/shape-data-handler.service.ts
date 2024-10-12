@@ -4,12 +4,14 @@ import Swal from 'sweetalert2';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShapeDataHandlerService {
-  private apiUrl = 'http://165.154.208.232:3000/api/shapes';
+  private apiUrl = `${environment.apiUrl}/ships/shapes`;  // Ambil URL API dari environment
+
 
   constructor(private http: HttpClient) {}
 

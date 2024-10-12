@@ -5,6 +5,7 @@ import { interval, Observable, Subject, switchMap } from 'rxjs';
 import { CircleZoneHandler } from './services/circle-zone-handler';
 import { PolygonZoneHandler } from './services/polygon-zone-handler';
 import { NotificationService } from './services/notification.service';
+import { environment } from '../environments/environment';  // Import environment
 
 export interface ShipData {
   mmsi: number;
@@ -27,14 +28,15 @@ export interface AisLogData {
   logTime: string;
   details: object[];
 }
+
 @Injectable({
   providedIn: 'root',
 })
 export class DataService {
-  private apiUrl = 'http://165.154.208.232:3000/api/ships'; // Ubah dengan API endpoint Anda
-  private zonesApiUrl = 'http://165.154.208.232:3000/api/shapes'; // API endpoint untuk zona
-  private dataLog = 'http://165.154.208.232:3000/api/ais-log';
-  private socketUrl = 'http://165.154.208.232:3000'; // Ubah dengan URL WebSocket server Anda
+  private apiUrl = `${environment.apiUrl}/ships`;  // Ambil URL API dari environment
+  private zonesApiUrl = `${environment.apiUrl}/shapes`; // API endpoint untuk zona dari environment
+  private dataLog = `${environment.apiUrl}/ais-log`; // URL untuk data log
+  private socketUrl = `${environment.apiUrl}/socket`; // Ambil URL WebSocket dari environment
   private socket!: Socket;
   public shipDataStream = new Subject<ShipData[]>();
   private shipZoneStatus: { [mmsi: number]: { [zoneId: string]: boolean } } =
@@ -48,9 +50,11 @@ export class DataService {
   ) {
     this.initializeWebSocketConnection();
   }
+
   getAisLogData(): Observable<AisLogData[]> {
     return this.http.get<AisLogData[]>(this.dataLog);
   }
+
   getShipsData(): Observable<ShipData[]> {
     return this.http.get<ShipData[]>(this.apiUrl);
   }
@@ -74,16 +78,16 @@ export class DataService {
           const zoneId = JSON.stringify(zone.coordinates); // Asumsikan koordinat adalah ID unik zona
           const previousStatus =
             this.shipZoneStatus[ship.mmsi]?.[zoneId] || false;
-            if ((this.polygonZoneHandler.isShipInZone(ship, zone) && !previousStatus)) {
-          const notificationMessage = `Ship ${ship.name} (${
-            ship.mmsi
-          }) entered ${zone.properties?.name || 'a polygon zone'}.`;
-          console.log(notificationMessage);
-          this.notificationService.addNotification({
-            message: notificationMessage,
-            timestamp: new Date().toLocaleTimeString(),
-          });
-        }
+          if (this.polygonZoneHandler.isShipInZone(ship, zone) && !previousStatus) {
+            const notificationMessage = `Ship ${ship.name} (${
+              ship.mmsi
+            }) entered ${zone.properties?.name || 'a polygon zone'}.`;
+            console.log(notificationMessage);
+            this.notificationService.addNotification({
+              message: notificationMessage,
+              timestamp: new Date().toLocaleTimeString(),
+            });
+          }
         }
       });
     });
@@ -103,6 +107,7 @@ export class DataService {
       });
     });
   }
+
   private initializeWebSocketConnection() {
     this.socket = io(this.socketUrl, {
       path: '/api/ships',

@@ -2,13 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ZoneService {
 
-  private apiUrl = 'http://165.154.208.232:3000/api/shapes';  // URL API
+  private apiUrl = `${environment.apiUrl}/ships/shapes`;  // Ambil URL API dari environment
+;  // URL API
 
   constructor(private http: HttpClient) { }
 
