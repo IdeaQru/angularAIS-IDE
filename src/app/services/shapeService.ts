@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class ShapeService {
-  private apiUrl = `${environment.apiUrl}/ships/shapes`;  // Ambil URL API dari environment
+  private apiUrl = `${environment.apiUrl}/shapes`;  // Ambil URL API dari environment
 ; // URL API backend
 
   constructor(private http: HttpClient) { }

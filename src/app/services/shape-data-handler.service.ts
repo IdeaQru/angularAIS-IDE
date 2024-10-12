@@ -10,7 +10,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class ShapeDataHandlerService {
-  private apiUrl = `${environment.apiUrl}/ships/shapes`;  // Ambil URL API dari environment
+  private apiUrl = `${environment.apiUrl}/shapes`;  // Ambil URL API dari environment
 
 
   constructor(private http: HttpClient) {}

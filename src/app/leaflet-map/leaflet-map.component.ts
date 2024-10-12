@@ -3,7 +3,6 @@ import { Subscription } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
 import { DataService } from '../data.service';
 import { MapService } from '../services/map.service';
-import { SocketService } from '../services/socket.service';
 import { MarkerService } from '../services/marker.service';
 import { HeatmapService } from '../services/heatmap.service';
 
@@ -23,20 +22,17 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
   constructor(
     private mapService: MapService,
     private dataService: DataService,
-    private socketService: SocketService,
     private markerService: MarkerService,  // Correct service for handling markers
     private heatmapService: HeatmapService // Correct service for handling heatmaps
   ) { }
 
   ngOnInit(): void {
     this.mapService.initializeMap('map');
-    this.setupRealtimeUpdates();
     this.loadAndDisplayData();
   }
 
   ngOnDestroy(): void {
     this.mapService.destroyMap();
-    this.socketService.disconnect();
     this.dataSubscription?.unsubscribe();
     this.aisUpdateSubscription?.unsubscribe();
     this.shapeUpdateSubscription?.unsubscribe();
@@ -52,17 +48,5 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
     });
   }
 
-  private setupRealtimeUpdates(): void {
-    this.aisUpdateSubscription = this.socketService.onAisDataUpdate().pipe(
-      throttleTime(1000)
-    ).subscribe(data => {
-      this.markerService.addMarkers(this.mapService.getMapInstance(), [data]); // Use the correct service for markers
-      this.heatmapService.addHeatMap(this.mapService.getMapInstance(), [data]); // Use the correct service for heatmaps
-    });
 
-    this.shapeUpdateSubscription = this.socketService.onShapeDataUpdate().subscribe(data => {
-      this.markerService.addMarkers(this.mapService.getMapInstance(), [data]); // Use the correct service for markers
-      this.heatmapService.addHeatMap(this.mapService.getMapInstance(), [data]); // Use the correct service for heatmaps
-    });
-  }
 }
