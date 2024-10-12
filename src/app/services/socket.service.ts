@@ -9,7 +9,7 @@ export class SocketService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io('http://localhost:3000');
+    this.socket = io('http://165.154.208.232:3000');
   }
 
   // Use Observable to handle data streams

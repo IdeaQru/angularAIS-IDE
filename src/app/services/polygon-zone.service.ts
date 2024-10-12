@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class PolygonZoneService {
-  private apiUrl = 'http://localhost:3000/api/shapes/polygon'; // Update this URL as per your API endpoint
+  private apiUrl = 'http://165.154.208.232:3000/api/shapes/polygon'; // Update this URL as per your API endpoint
 
   constructor(private http: HttpClient) {}
 

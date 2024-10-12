@@ -31,10 +31,10 @@ export interface AisLogData {
   providedIn: 'root',
 })
 export class DataService {
-  private apiUrl = 'http://localhost:3000/api/ships'; // Ubah dengan API endpoint Anda
-  private zonesApiUrl = 'http://localhost:3000/api/shapes'; // API endpoint untuk zona
-  private dataLog = 'http://localhost:3000/api/ais-log';
-  private socketUrl = 'http://localhost:3000'; // Ubah dengan URL WebSocket server Anda
+  private apiUrl = 'http://165.154.208.232:3000/api/ships'; // Ubah dengan API endpoint Anda
+  private zonesApiUrl = 'http://165.154.208.232:3000/api/shapes'; // API endpoint untuk zona
+  private dataLog = 'http://165.154.208.232:3000/api/ais-log';
+  private socketUrl = 'http://165.154.208.232:3000'; // Ubah dengan URL WebSocket server Anda
   private socket!: Socket;
   public shipDataStream = new Subject<ShipData[]>();
   private shipZoneStatus: { [mmsi: number]: { [zoneId: string]: boolean } } =

@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
 })
 export class ZoneService {
 
-  private apiUrl = 'http://103.24.48.92:3000/api/shapes';  // URL API
+  private apiUrl = 'http://165.154.208.232:3000/api/shapes';  // URL API
 
   constructor(private http: HttpClient) { }
 

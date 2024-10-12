@@ -9,7 +9,7 @@ import { catchError, tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class ShapeDataHandlerService {
-  private apiUrl = 'http://localhost:3000/api/shapes';
+  private apiUrl = 'http://165.154.208.232:3000/api/shapes';
 
   constructor(private http: HttpClient) {}
 
