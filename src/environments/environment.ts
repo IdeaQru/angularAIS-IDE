@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api',  // Sesuaikan dengan URL API untuk development
-  socketUrl: 'http://localhost:3000'  // URL WebSocket untuk development
+  apiUrl: 'http://165.154.208.232:3000/api',  // Ganti dengan IP backend
+  socketUrl: 'http://165.154.208.232:3000'     // Ganti dengan IP backend
 };

@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class PolygonZoneService {
-  private apiUrl = `${environment.apiUrl}/ships/shapes/polygon`;  // Ambil URL API dari environment
+  private apiUrl = `${environment.apiUrl}/shapes/polygon`;  // Ambil URL API dari environment
 
 
   constructor(private http: HttpClient) {}
