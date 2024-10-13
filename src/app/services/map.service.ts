@@ -12,6 +12,7 @@ import { SearchControlService } from './searchcontrol.service';
 import { ShapeDataHandlerService } from './shape-data-handler.service';
 import { PlaybackService } from './playback.service'; // Import PlaybackService
 import { IconService } from './icon.service';  // Pastikan file service diimport
+import { ShapeService } from './shapeService';
 
 export interface ShipData {
   mmsi: number;
@@ -40,7 +41,8 @@ export class MapService {
     private searchControlService: SearchControlService, // Inject the SearchControlService
     private shapeDataHandlerService: ShapeDataHandlerService,
   private playbackService: PlaybackService,
-  private iconService: IconService
+  private iconService: IconService,
+  private shapeService: ShapeService
 
 
   ) {
@@ -83,10 +85,31 @@ export class MapService {
 
     // Listen for drawing events to trigger the SweetAlert popup
     this.map.on(L.Draw.Event.CREATED, (event: any) => {
+      console.log('Draw event triggered');
       const layer = event.layer;
       this.drawnItems.addLayer(layer);
       // Trigger the SweetAlert popup using ShapeDataHandlerService
       this.shapeDataHandlerService.promptForLayerData(layer);
+    });
+
+    this.map.on(L.Draw.Event.DELETED, (event: any) => {
+      const layers = event.layers;
+      layers.eachLayer((layer: any) => {
+        if (layer.shapeId) {
+          console.log('Deleting shape with id', layer.shapeId);
+          this.shapeService.deleteShape(layer.shapeId).subscribe({
+            next: (res) => {
+              console.log('Shape deleted successfully from server:', res);
+            },
+            error: (err) => {
+              console.error('Error deleting shape:', err);
+              alert('Failed to delete shape from server: ' + err.message);
+            }
+          });
+        } else {
+          console.log('Layer does not have shapeId');
+        }
+      });
     });
   }
 

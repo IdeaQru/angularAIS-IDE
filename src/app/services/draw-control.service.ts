@@ -50,25 +50,25 @@ export class DrawControlService {
   handleDrawEvents(map: L.Map, drawnItems: L.FeatureGroup): void {
     map.on(L.Draw.Event.CREATED, (event: any) => {
       const layer = event.layer;
+      console.log('Create event triggered');
       drawnItems.addLayer(layer);
-      this.shapeDataHandler.promptForLayerData(layer);
       // MapUtilities.saveDrawnItems(drawnItems);
     });
 
     map.on(L.Draw.Event.DELETED, (event: any) => {
+      console.log('Delete event triggered'); // Cek apakah event DELETED di-trigger
       const layers = event.layers;
       layers.eachLayer((layer: any) => {
+        console.log('Layer found in delete event', layer); // Cek apakah layer benar-benar ada
         if (layer.shapeId) {
-          this.shapeService.deleteShape(layer.shapeId).subscribe({
-            next: (res) => console.log('Shape deleted from server', res),
-            error: (err) => {
-              console.error('Error deleting shape', err);
-              alert('Failed to delete shape: ' + err.message); // Display or handle error more visibly
-            }
-          });
+          console.log('Deleting shape with id', layer.shapeId);
+          // Perform delete logic
+        } else {
+          console.log('Layer does not have shapeId'); // Cek jika layer tidak punya shapeId
         }
       });
     });
+
 
   }
   loadShapes(map: L.Map, drawnItems: L.FeatureGroup): void {

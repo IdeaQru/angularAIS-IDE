@@ -37,30 +37,12 @@ export class ShapeDataHandlerService {
     });
 
     // Ensure that the popup is visible during fullscreen
-    this.ensurePopupVisibilityInFullscreen();
   }
 
   /**
    * Ensures that the SweetAlert popup remains visible even when the map is in fullscreen mode.
    */
-  private ensurePopupVisibilityInFullscreen(): void {
-    const updatePopupZIndex = () => {
-      const swalContainer = document.querySelector('.swal2-container') as HTMLElement;
-      if (swalContainer) {
-        // Set the z-index to a very high number to ensure visibility during fullscreen
-        swalContainer.style.zIndex = '2147483647'; // Highest z-index possible
-        swalContainer.style.position = 'fixed'; // Make sure it's fixed to always be on top
-      }
-    };
 
-    // Listen for all possible fullscreen change events
-    ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'msfullscreenchange'].forEach(eventType => {
-      document.addEventListener(eventType, updatePopupZIndex);
-    });
-
-    // Immediately apply the z-index to ensure visibility
-    updatePopupZIndex();
-  }
 
   /**
    * Creates the HTML content for the SweetAlert popup.
@@ -145,4 +127,5 @@ export class ShapeDataHandlerService {
       })
     ).subscribe();
   }
+  
 }

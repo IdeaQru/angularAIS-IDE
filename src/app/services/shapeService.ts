@@ -20,14 +20,8 @@ export class ShapeService {
     return this.http.post(this.apiUrl, shapeData);
   }
   // Dalam ShapeDataHandlerService
-  deleteShape(shapeId: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${shapeId}`).pipe(
-      tap(() => console.log(`Deleting shape with id ${shapeId}`)),
-      catchError(error => {
-        console.error(`Deletion failed for shape with id ${shapeId}:`, error);
-        return throwError(() => new Error('Deletion failed'));
-      })
-    );
+    deleteShape(shapeId: string): Observable<any> {
+      return this.http.delete(`${this.apiUrl}/${shapeId}`);
   }
 
 

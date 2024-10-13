@@ -78,7 +78,7 @@ export class IconService {
 
   // Fungsi untuk menampilkan atau menyembunyikan legenda dengan interaksi
   static createLegendControl(): L.Control {
-    const legend = new L.Control({ position: 'bottomright' });
+    const legend = new L.Control({ position: 'topright' });
 
     legend.onAdd = () => {
       const container = L.DomUtil.create('div', 'legend-container');
@@ -96,7 +96,7 @@ export class IconService {
       button.style.color = '#000'; // Text color black
       button.style.fontSize = '16px';
       button.style.cursor = 'pointer';
-    
+
 
       // Buat div untuk legenda dan sembunyikan
       const legendDiv = L.DomUtil.create('div', 'info legend', container);
