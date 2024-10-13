@@ -3,7 +3,6 @@ import 'leaflet-draw';
 import 'leaflet.fullscreen';
 import 'leaflet.heat';
 import { Injectable } from '@angular/core';
-import { IconService } from './icon.service';
 import { BaseLayerService } from './base-layer.service';
 import { DrawControlService } from './draw-control.service';
 import * as moment from 'moment';
@@ -12,6 +11,7 @@ import { CoordinateControlService } from './add-coordinate.service';
 import { SearchControlService } from './searchcontrol.service';
 import { ShapeDataHandlerService } from './shape-data-handler.service';
 import { PlaybackService } from './playback.service'; // Import PlaybackService
+import { IconService } from './icon.service';  // Pastikan file service diimport
 
 export interface ShipData {
   mmsi: number;
@@ -35,12 +35,12 @@ export class MapService {
   private drawnItems: L.FeatureGroup = new L.FeatureGroup();
   private heatmapLayer?: L.Layer;
   private coordinateControlService: CoordinateControlService;
-  private searchConrolService: SearchControlService | undefined;
   constructor(
     private drawControlService: DrawControlService,
     private searchControlService: SearchControlService, // Inject the SearchControlService
     private shapeDataHandlerService: ShapeDataHandlerService,
-  private playbackService: PlaybackService
+  private playbackService: PlaybackService,
+  private iconService: IconService
 
 
   ) {
@@ -60,13 +60,17 @@ export class MapService {
     this.map.addLayer(this.drawnItems);
     this.setupDrawControl();
     this.playbackService.initializePlayback(this.map);
+    this.addLegend();
     // Add the coordinate control and search control to the map
     this.coordinateControlService.addCoordinateControl(this.map);
     this.searchControlService.addSearchControl(this.map, this.focusOnShip.bind(this));
     this.drawControlService.loadShapes(this.map, this.drawnItems);
     return this.map;
   }
-
+  addLegend(): void {
+    const legendControl = IconService.createLegendControl();  // Panggil fungsi dari IconService
+    legendControl.addTo(this.map);  // Tambahkan legend ke peta
+  }
   private addBaseLayers(): void {
     const defaultLayer = BaseLayerService.baseLayers['Ocean'];
     defaultLayer.addTo(this.map);

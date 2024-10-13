@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
- apiUrl: 'http://165.154.208.232:3000/api',  // Ganti dengan IP backend
-  socketUrl: 'http://165.154.208.232:3000'     // Ganti dengan IP backend
+  apiUrl: 'http://labnav.my.id:3000/api',  // Pastikan ini adalah IP backend
+  socketUrl: 'http://labnav.my.id:3000'    // Ganti ini juga jika menggunakan WebSocket
 };

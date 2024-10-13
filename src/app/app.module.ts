@@ -34,6 +34,7 @@ import { LoginComponent } from './login/login.component';
 import { MainlayoutComponent } from './mainlayout/mainlayout.component';
 import { MatInputModule } from '@angular/material/input';
 import { RegisterComponent } from './register/register.component';
+import { IconService } from './services/icon.service';
 
 @NgModule({
   declarations: [
@@ -71,7 +72,7 @@ import { RegisterComponent } from './register/register.component';
     MatIconModule,
     MatCardModule,MatInputModule
   ],
-  providers: [AppService, DataService],
+  providers: [AppService, DataService,IconService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
