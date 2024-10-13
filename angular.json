@@ -89,7 +89,7 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "outputPath": "/var/www/angular-aisweb"  
+              "outputPath": "/var/www/angular-aisweb"
             },
             "development": {
               "buildOptimizer": false,
