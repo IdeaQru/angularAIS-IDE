@@ -37,13 +37,42 @@ export class PolygonZoneHandler {
   }
 
   isShipInZone(ship: any, zone: any): boolean {
+    const lat = parseFloat(ship.lat);
+    const lon = parseFloat(ship.lon);
+  
+    // Validasi koordinat kapal
+    if (isNaN(lon) || isNaN(lat)) {
+      console.error('Invalid ship coordinates:', ship);
+      return false;
+    }
+  
     try {
-      const point = turf.point([ship.lon, ship.lat]);
-      const polygon = turf.polygon(zone.coordinates);
+      // Validasi koordinat zona
+      const coordinates = zone.coordinates[0]; // Assuming this is a simple polygon
+      const isValidPolygon = coordinates.every(coord => 
+        Array.isArray(coord) && coord.length === 2 && !isNaN(coord[0]) && !isNaN(coord[1])
+      );
+  
+      if (!isValidPolygon) {
+        console.error('Invalid polygon coordinates:', zone.coordinates);
+        return false;
+      }
+  
+      // Pastikan poligon tertutup (titik pertama dan terakhir harus sama)
+      if (coordinates[0][0] !== coordinates[coordinates.length - 1][0] || 
+          coordinates[0][1] !== coordinates[coordinates.length - 1][1]) {
+        coordinates.push(coordinates[0]); // Tutup poligon
+      }
+  
+      const point = turf.point([lon, lat]);
+      const polygon = turf.polygon([coordinates]);
+  
       return turf.booleanPointInPolygon(point, polygon);
     } catch (error) {
       console.error('Failed to create polygon or check ship in zone', error);
       return false;
     }
   }
+
+  
 }
