@@ -8,6 +8,9 @@ import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 import { MainlayoutComponent } from './mainlayout/mainlayout.component';
 import { RegisterComponent } from './register/register.component';
+import { SettingsComponent } from './option/settings/settings.component';
+import { FilterComponent } from './option/filter/filter.component';
+import { AnomalyDetectComponent } from './option/anomaly-detect/anomaly-detect.component';
 
 const routes: Routes = [
   {
@@ -33,6 +36,7 @@ const routes: Routes = [
       { path: 'tables', component: TablesComponent },
       { path: 'newfitur', component: NewfiturComponent },
       { path: 'notifications', component: NotificationComponent },
+     
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ]
   },

@@ -35,7 +35,11 @@ import { MainlayoutComponent } from './mainlayout/mainlayout.component';
 import { MatInputModule } from '@angular/material/input';
 import { RegisterComponent } from './register/register.component';
 import { IconService } from './services/icon.service';
-
+import { SettingsComponent } from './option/settings/settings.component';
+import { FilterComponent } from './option/filter/filter.component';
+import { AnomalyDetectComponent } from './option/anomaly-detect/anomaly-detect.component';
+import { OptionsPageComponent } from './options-page/options-page.component';
+import { MatTabsModule } from '@angular/material/tabs';  // Tambahkan ini
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,6 +57,10 @@ import { IconService } from './services/icon.service';
     LoginComponent,
     MainlayoutComponent,
     RegisterComponent,
+    SettingsComponent,
+    FilterComponent,
+    AnomalyDetectComponent,
+    OptionsPageComponent,
 
   ],
   imports: [
@@ -70,7 +78,7 @@ import { IconService } from './services/icon.service';
     MatSnackBarModule,
     MatDialogModule,MatButtonModule, MatListModule,
     MatIconModule,
-    MatCardModule,MatInputModule
+    MatCardModule,MatInputModule,MatTabsModule
   ],
   providers: [AppService, DataService,IconService],
   bootstrap: [AppComponent]

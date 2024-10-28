@@ -17,7 +17,11 @@ export class MarkerService {
   // Method to add markers to the map
   addMarkers(map: L.Map, data: ShipData[]): void {
     this.markersLayer.clearLayers(); // Clear any existing markers before adding new ones
-    data.forEach((ship) => {
+
+    // Filter data for timestamps within the last 24 hours
+    const recentData = data.filter((ship) => this.isRecent(ship.timestamp));
+
+    recentData.forEach((ship) => {
       const iconUrl = IconService.getIconForShipType(ship.type).options.iconUrl;
       const shipBearing = ship.heading || ship.courseOverGround || 0;
 
@@ -41,6 +45,14 @@ export class MarkerService {
 
     map.addLayer(this.markersLayer); // Add the markersLayer to the map
   }
+
+  // Method to check if the timestamp is within the last 24 hours
+  private isRecent(timestamp: string): boolean {
+    const now = moment();
+    const shipTime = moment(timestamp, 'DD-MM-YYYY HH:mm:ss'); // Adjust format if needed
+    return now.diff(shipTime, 'hours') < 24;
+  }
+
 
   // Method to add a heatmap to the map
   addHeatMap(map: L.Map, data: ShipData[]): void {
