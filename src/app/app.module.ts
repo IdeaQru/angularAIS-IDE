@@ -13,7 +13,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { TablesComponent } from './tables/tables.component';
-import { NewfiturComponent } from './newfitur/newfitur.component';
+import { MapsComponent } from './maps/maps.component';
 import { LeafletMapComponent } from './leaflet-map/leaflet-map.component';
 import { DataService } from './data.service';
 import { ChartComponent } from './chart/chart.component';
@@ -50,7 +50,7 @@ import { MatTabsModule } from '@angular/material/tabs';  // Tambahkan ini
     UiconfiguratorComponent,
     DashboardComponent,
     TablesComponent,
-    NewfiturComponent,
+    MapsComponent,
     LeafletMapComponent,
     ChartComponent,
     NotificationComponent,

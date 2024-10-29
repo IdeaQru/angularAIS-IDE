@@ -6,6 +6,30 @@ import Swal from 'sweetalert2';
   providedIn: 'root'
 })
 export class IconService {
+  private static selectedShipTypes: string[] = [];
+
+  private static scriptLegend = `
+      <div style="display: flex; align-items: center; margin-top: 16px; padding: 8px; background-color: #f5f5f5; border-radius: 8px;">
+        <div style="width: 16px; height: 16px; border-radius: 50%; background-color: yellow; margin-right: 12px;"></div>
+        <span style="color: #333; flex-grow: 1;">Warning Zone (Circle)</span>
+        
+      </div>
+      <div style="display: flex; align-items: center; margin-top: 12px; padding: 8px; background-color: #f5f5f5; border-radius: 8px;">
+        <div style="width: 16px; height: 16px; border-radius: 50%; background-color: red; margin-right: 12px;"></div>
+        <span style="color: #333; flex-grow: 1;">Danger Zone (Circle)</span>
+     
+      </div>
+      <div style="display: flex; align-items: center; margin-top: 12px; padding: 8px; background-color: #f5f5f5; border-radius: 8px;">
+        <div style="width: 16px; height: 16px; background-color: yellow; margin-right: 12px;"></div>
+        <span style="color: #333; flex-grow: 1;">Warning Area (Polygon)</span>
+    
+      </div>
+      <div style="display: flex; align-items: center; margin-top: 12px; padding: 8px; background-color: #f5f5f5; border-radius: 8px;">
+        <div style="width: 16px; height: 16px; background-color: red; margin-right: 12px;"></div>
+        <span style="color: #333; flex-grow: 1;">Danger Area (Polygon)</span>
+     
+      </div>
+    `;
   private static shipIcons: { [type: string]: L.Icon } = {
     'Unspecified': L.icon({
       iconUrl: 'assets/images/unspecified.png',
@@ -48,9 +72,9 @@ export class IconService {
       iconAnchor: [12, 12]
     })
   };
-  static router: any;
 
   static getIconForShipType(type: number): L.Icon {
+    // Logic to determine the correct icon based on type
     if (type >= 20 && type <= 29) {
       return this.shipIcons['Cargo'];
     } else if (type >= 30 && type <= 39) {
@@ -71,15 +95,13 @@ export class IconService {
       return this.shipIcons['Cargo'];
     } else if (type >= 80 && type <= 89) {
       return this.shipIcons['Tanker'];
-    } else if (type >= 90 && type <= 99) {
-      return this.shipIcons['Unspecified'];
     } else {
       return this.shipIcons['Unspecified'];
     }
   }
 
   // Fungsi untuk menampilkan atau menyembunyikan legenda dengan interaksi
-  static createLegendControl(): L.Control {
+  static createLegendControl(onFilterUpdate: (selectedTypes: string[]) => void): L.Control {
     const legend = new L.Control({ position: 'topright' });
 
     legend.onAdd = () => {
@@ -96,45 +118,9 @@ export class IconService {
       button.style.fontSize = '16px';
       button.style.cursor = 'pointer';
 
-      const dropdownMenu = L.DomUtil.create('div', 'dropdown-menu', container);
-      dropdownMenu.style.display = 'none';
-      dropdownMenu.style.position = 'absolute';
-      dropdownMenu.style.top = '40px';
-      dropdownMenu.style.right = '0';
-      dropdownMenu.style.backgroundColor = 'white';
-      dropdownMenu.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
-      dropdownMenu.style.borderRadius = '8px';
-      dropdownMenu.style.padding = '10px';
-      dropdownMenu.style.zIndex = '1000';
-
-      const options = [
-        { label: 'Settings', route: '/settings' },
-        { label: 'Filter', route: '/filter' },
-        { label: 'Anomaly Detect', route: '/anomaly-detect' }
-      ];
-
-      options.forEach(option => {
-        const item = L.DomUtil.create('div', 'dropdown-item', dropdownMenu);
-        item.innerText = option.label;
-        item.style.padding = '8px';
-        item.style.cursor = 'pointer';
-        item.onmouseenter = () => item.style.backgroundColor = '#f0f0f0';
-        item.onmouseleave = () => item.style.backgroundColor = 'white';
-
-        item.onclick = () => {
-          // Panggil SweetAlert pop-up
-          Swal.fire({
-            title: option.label,
-            html: `<iframe src="${option.route}" width="100%" height="400px" style="border:none;"></iframe>`,
-            width: 800,
-            showConfirmButton: true,
-          });
-          dropdownMenu.style.display = 'none';
-        };
-      });
-
+      // Pass the callback when calling showOptionsPopup
       button.onclick = () => {
-        dropdownMenu.style.display = dropdownMenu.style.display === 'none' ? 'block' : 'none';
+        this.showOptionsPopup(onFilterUpdate);
       };
 
       return container;
@@ -142,4 +128,120 @@ export class IconService {
 
     return legend;
   }
-}  
+
+
+  public static showOptionsPopup(onFilterUpdate: (selectedTypes: string[]) => void): void {
+    Swal.fire({
+      title: 'Options',
+      html: `
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 10px;">
+          <button id="legendTab" style="flex: 1; padding: 10px; border: none; background: #eee; cursor: pointer;">Legend and Filters</button>
+          <button id="settingsTab" style="flex: 1; padding: 10px; border: none; background: #eee; cursor: pointer;">Settings</button>
+        </div>
+        <div id="content" style="padding: 10px; text-align: left;">
+          ${this.getLegendContent()}
+        </div>
+      `,
+      width: 800,
+      showConfirmButton: true,
+      confirmButtonText: 'OK',
+      didOpen: () => {
+        const content = document.getElementById('content');
+
+        document.getElementById('legendTab')?.addEventListener('click', () => {
+          if (content) {
+            content.innerHTML = this.getLegendContent();
+            this.addLegendListeners(this.selectedShipTypes); // Apply stored states to checkboxes
+          }
+        });
+
+        document.getElementById('settingsTab')?.addEventListener('click', () => {
+          if (content) {
+            content.innerHTML = `
+              <h3>Settings</h3>
+              <p>Additional settings can go here.</p>
+            `;
+          }
+        });
+
+        // Add initial legend listeners and apply stored states to checkboxes
+        this.addLegendListeners(this.selectedShipTypes);
+      },
+      preConfirm: () => {
+        // Save the selected types and pass them to the callback
+        onFilterUpdate([...this.selectedShipTypes]);
+      }
+    });
+  }
+  
+  private static addLegendListeners(tempSelectedTypes: string[]): void {
+    document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+        const target = checkbox as HTMLInputElement;
+        const types = target.dataset['types']?.split(',') || []; // Ensure we get an array of types
+
+        // Set the initial checkbox state to checked and update tempSelectedTypes if not already set
+        target.checked = true; // Set initial state as checked
+        types.forEach((type) => {
+            if (!tempSelectedTypes.includes(type)) {
+                tempSelectedTypes.push(type); // Add to selected types if not present
+            }
+        });
+
+        // Add an event listener to update tempSelectedTypes on change
+        checkbox.addEventListener('change', () => {
+            if (target.checked) {
+                types.forEach((type) => {
+                    if (!tempSelectedTypes.includes(type)) {
+                        tempSelectedTypes.push(type); // Add type if checked and not already present
+                    }
+                });
+            } else {
+                types.forEach((type) => {
+                    const index = tempSelectedTypes.indexOf(type);
+                    if (index > -1) tempSelectedTypes.splice(index, 1); // Remove type if unchecked
+                });
+            }
+        });
+    });
+}
+
+  
+  
+  private static getLegendContent(): string {
+    const shipTypes = [
+      { 
+        name: 'Unspecified', 
+        icon: 'assets/images/unspecified.png', 
+        types: Array.from({ length: 20 }, (_, i) => i) // 0-19 (before defined ranges)
+          .concat(Array.from({ length: 40 }, (_, i) => i + 90)) // 90+ (after defined ranges)
+      },
+      { name: 'Fishing', icon: 'assets/images/fishing.png', types: [30] },
+      { name: 'Tanker', icon: 'assets/images/tanker.png', types: Array.from({ length: 10 }, (_, i) => 80 + i) },
+      { name: 'Cargo', icon: 'assets/images/cargo.png', types: [...Array.from({ length: 10 }, (_, i) => 20 + i), ...Array.from({ length: 10 }, (_, i) => 70 + i)] },
+      { name: 'Tug', icon: 'assets/images/tug.png', types: [31, 32] },
+      { name: 'Highspeed', icon: 'assets/images/highspeed.png', types: Array.from({ length: 20 }, (_, i) => 40 + i) },
+      { name: 'Passenger', icon: 'assets/images/passenger.png', types: Array.from({ length: 10 }, (_, i) => 60 + i) },
+      { name: 'Pleasure', icon: 'assets/images/pleasure.png', types: [36] }
+    ];
+  
+    let legendHTML = '<h3 style="color: #333; text-align: center; margin-bottom: 16px;">Legend</h3>';
+  
+    shipTypes.forEach(ship => {
+      legendHTML += `
+        <div style="display: flex; align-items: center; margin-bottom: 12px; padding: 8px; background-color: #f5f5f5; border-radius: 8px;">
+          <img src="${ship.icon}" width="24" height="24" style="margin-right: 12px;">
+          <span style="color: #333; flex-grow: 1;">${ship.name}</span>
+          <label class="switch">
+            <input type="checkbox" data-types="${ship.types.join(',')}" id="toggle-${ship.name.toLowerCase()}" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+      `;
+    });  
+    // Tambahkan elemen legenda untuk Circle (Warning Zone dan Danger Zone) dan Polygon (Warning Area dan Danger Area)
+    legendHTML += this.scriptLegend;
+    return legendHTML;
+  }
+  
+  
+}

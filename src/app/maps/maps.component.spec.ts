@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NewfiturComponent } from './newfitur.component';
+import { NewfiturComponent } from './maps.component';
 
 describe('NewfiturComponent', () => {
   let component: NewfiturComponent;

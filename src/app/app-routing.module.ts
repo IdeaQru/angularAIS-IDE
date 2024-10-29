@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TablesComponent } from './tables/tables.component';
-import { NewfiturComponent } from './newfitur/newfitur.component';
+import { MapsComponent } from './maps/maps.component';
 import { NotificationComponent } from './notification/notification.component';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './guards/auth.guard';
@@ -34,9 +34,8 @@ const routes: Routes = [
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'tables', component: TablesComponent },
-      { path: 'newfitur', component: NewfiturComponent },
+      { path: 'maps', component: MapsComponent },
       { path: 'notifications', component: NotificationComponent },
-     
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ]
   },
