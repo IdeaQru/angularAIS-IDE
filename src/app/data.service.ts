@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { interval, Observable, Subject, switchMap } from 'rxjs';
+import { interval, Observable, Subject, switchMap,map } from 'rxjs';
 import { CircleZoneHandler } from './services/circle-zone-handler';
 import { PolygonZoneHandler } from './services/polygon-zone-handler';
 import { NotificationService } from './services/notification.service';
 import { environment } from '../environments/environment';  // Import environment
+import moment from 'moment';
 
 export interface ShipData {
   mmsi: number;
@@ -53,8 +54,17 @@ export class DataService {
   }
 
   getShipsData(): Observable<ShipData[]> {
-    return this.http.get<ShipData[]>(this.apiUrl);
+    return this.http.get<ShipData[]>(this.apiUrl).pipe(
+      map((ships: ShipData[]) => {
+        const currentTime = new Date().getTime();
+        return ships.filter((ship) => {
+          const shipTime = moment(ship.timestamp, 'DD-MM-YYYY HH:mm:ss').toDate().getTime();
+          return (currentTime - shipTime) < 24 * 60 * 60 * 1000;
+        });
+      })
+    );
   }
+
 
   getZonesData(): Observable<Zone[]> {
     return this.http.get<Zone[]>(this.zonesApiUrl);

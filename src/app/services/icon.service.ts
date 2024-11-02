@@ -12,22 +12,22 @@ export class IconService {
       <div style="display: flex; align-items: center; margin-top: 16px; padding: 8px; background-color: #f5f5f5; border-radius: 8px;">
         <div style="width: 16px; height: 16px; border-radius: 50%; background-color: yellow; margin-right: 12px;"></div>
         <span style="color: #333; flex-grow: 1;">Warning Zone (Circle)</span>
-        
+
       </div>
       <div style="display: flex; align-items: center; margin-top: 12px; padding: 8px; background-color: #f5f5f5; border-radius: 8px;">
         <div style="width: 16px; height: 16px; border-radius: 50%; background-color: red; margin-right: 12px;"></div>
         <span style="color: #333; flex-grow: 1;">Danger Zone (Circle)</span>
-     
+
       </div>
       <div style="display: flex; align-items: center; margin-top: 12px; padding: 8px; background-color: #f5f5f5; border-radius: 8px;">
         <div style="width: 16px; height: 16px; background-color: yellow; margin-right: 12px;"></div>
         <span style="color: #333; flex-grow: 1;">Warning Area (Polygon)</span>
-    
+
       </div>
       <div style="display: flex; align-items: center; margin-top: 12px; padding: 8px; background-color: #f5f5f5; border-radius: 8px;">
         <div style="width: 16px; height: 16px; background-color: red; margin-right: 12px;"></div>
         <span style="color: #333; flex-grow: 1;">Danger Area (Polygon)</span>
-     
+
       </div>
     `;
   private static shipIcons: { [type: string]: L.Icon } = {
@@ -75,18 +75,17 @@ export class IconService {
 
   static getIconForShipType(type: number): L.Icon {
     // Logic to determine the correct icon based on type
-    if (type >= 20 && type <= 29) {
+    if (type >= 0 && type <= 19) {
+      // Memetakan tipe 0-19 ke kategori tertentu jika diperlukan, atau gunakan "Unspecified" jika belum ada kategori khusus
+      return this.shipIcons['Unspecified'];
+    } else if (type >= 20 && type <= 29) {
       return this.shipIcons['Cargo'];
-    } else if (type >= 30 && type <= 39) {
-      if (type === 30) {
-        return this.shipIcons['Fishing'];
-      } else if (type === 31 || type === 32) {
-        return this.shipIcons['Tug'];
-      } else if (type === 36) {
-        return this.shipIcons['Pleasure'];
-      } else {
-        return this.shipIcons['Unspecified'];
-      }
+    } else if (type === 30) {
+      return this.shipIcons['Fishing'];
+    } else if (type === 31 || type === 32) {
+      return this.shipIcons['Tug'];
+    } else if (type === 36) {
+      return this.shipIcons['Pleasure'];
     } else if (type >= 40 && type <= 59) {
       return this.shipIcons['Highspeed'];
     } else if (type >= 60 && type <= 69) {
@@ -95,9 +94,13 @@ export class IconService {
       return this.shipIcons['Cargo'];
     } else if (type >= 80 && type <= 89) {
       return this.shipIcons['Tanker'];
+    } else if (type >= 90 && type <= 100) {
+      // Misalnya untuk tipe 90-100, kita bisa menggunakan kategori "Unspecified" atau kategori lain yang lebih cocok
+      return this.shipIcons['Unspecified'];
     } else {
       return this.shipIcons['Unspecified'];
     }
+
   }
 
   // Fungsi untuk menampilkan atau menyembunyikan legenda dengan interaksi
@@ -173,7 +176,7 @@ export class IconService {
       }
     });
   }
-  
+
   private static addLegendListeners(tempSelectedTypes: string[]): void {
     document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
         const target = checkbox as HTMLInputElement;
@@ -205,27 +208,33 @@ export class IconService {
     });
 }
 
-  
-  
+// Utility function to create a range of numbers
+private static createRange(start: number, end: number): number[] {
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+}
+
+
   private static getLegendContent(): string {
     const shipTypes = [
-      { 
-        name: 'Unspecified', 
-        icon: 'assets/images/unspecified.png', 
+      {
+        name: 'Unspecified',
+        icon: 'assets/images/unspecified.png',
         types: Array.from({ length: 20 }, (_, i) => i) // 0-19 (before defined ranges)
           .concat(Array.from({ length: 40 }, (_, i) => i + 90)) // 90+ (after defined ranges)
       },
-      { name: 'Fishing', icon: 'assets/images/fishing.png', types: [30] },
-      { name: 'Tanker', icon: 'assets/images/tanker.png', types: Array.from({ length: 10 }, (_, i) => 80 + i) },
-      { name: 'Cargo', icon: 'assets/images/cargo.png', types: [...Array.from({ length: 10 }, (_, i) => 20 + i), ...Array.from({ length: 10 }, (_, i) => 70 + i)] },
-      { name: 'Tug', icon: 'assets/images/tug.png', types: [31, 32] },
-      { name: 'Highspeed', icon: 'assets/images/highspeed.png', types: Array.from({ length: 20 }, (_, i) => 40 + i) },
-      { name: 'Passenger', icon: 'assets/images/passenger.png', types: Array.from({ length: 10 }, (_, i) => 60 + i) },
-      { name: 'Pleasure', icon: 'assets/images/pleasure.png', types: [36] }
+
+        { name: 'Fishing', icon: 'assets/images/fishing.png', types: [30] },
+        { name: 'Tanker', icon: 'assets/images/tanker.png', types: this.createRange(80, 89) },  // Tipe 80-89
+        { name: 'Cargo', icon: 'assets/images/cargo.png', types: [...this.createRange(20, 29), ...this.createRange(70, 79)] }, // Tipe 20-29 dan 70-79
+        { name: 'Tug', icon: 'assets/images/tug.png', types: [31, 32] },
+        { name: 'Highspeed', icon: 'assets/images/highspeed.png', types: this.createRange(40, 59) },  // Tipe 40-59
+        { name: 'Passenger', icon: 'assets/images/passenger.png', types: this.createRange(60, 69) },  // Tipe 60-69
+        { name: 'Pleasure', icon: 'assets/images/pleasure.png', types: [36] }
+
     ];
-  
+
     let legendHTML = '<h3 style="color: #333; text-align: center; margin-bottom: 16px;">Legend</h3>';
-  
+
     shipTypes.forEach(ship => {
       legendHTML += `
         <div style="display: flex; align-items: center; margin-bottom: 12px; padding: 8px; background-color: #f5f5f5; border-radius: 8px;">
@@ -237,11 +246,11 @@ export class IconService {
           </label>
         </div>
       `;
-    });  
+    });
     // Tambahkan elemen legenda untuk Circle (Warning Zone dan Danger Zone) dan Polygon (Warning Area dan Danger Area)
     legendHTML += this.scriptLegend;
     return legendHTML;
   }
-  
-  
+
+
 }

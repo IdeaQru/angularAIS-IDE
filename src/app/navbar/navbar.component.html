@@ -85,8 +85,8 @@
             class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4"
             aria-labelledby="dropdownMenuButton"
           >
-            <li *ngFor="let notification of notifications">
-              <a class="dropdown-item">
+          <li *ngFor="let notification of notifications.slice().reverse()">
+            <a class="dropdown-item">
                 <strong>{{ notification.timestamp }}</strong>: {{ notification.message }}
               </a>
             </li>

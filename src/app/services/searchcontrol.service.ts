@@ -71,11 +71,19 @@ export class SearchControlService {
     }
 
     this.dataService.getShipsData().subscribe((ships: ShipData[]) => {
-      const foundShip = ships.find((ship) =>
-        ship.name &&
-        (ship.mmsi.toString() === searchQuery.trim() ||
-          ship.name.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
+      const trimmedQuery = searchQuery.trim().toLowerCase();
+
+      const foundShip = ships.find((ship) => {
+        // Cek jika query adalah MMSI dan cocokkan
+        if (ship.mmsi.toString() === trimmedQuery) {
+          return true;
+        }
+        // Cek jika query adalah name dan name tidak undefined
+        if (ship.name && ship.name.toLowerCase().includes(trimmedQuery)) {
+          return true;
+        }
+        return false;
+      });
 
       if (foundShip) {
         focusOnShip(foundShip);
@@ -84,4 +92,6 @@ export class SearchControlService {
       }
     });
   }
+
+
 }

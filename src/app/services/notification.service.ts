@@ -31,6 +31,10 @@ export class NotificationService {
     const notifications = this.notificationsSubject.getValue().filter(n => n !== notification);
     this.notificationsSubject.next(notifications);
   }
+  deleteAllNotifications() {
+    const notifications = [];
+    this.notificationsSubject.next(notifications);
+  }
   private showNotificationPopup(message: string) {
     this.snackBar.open(message, 'Close', {
       duration: 5000,

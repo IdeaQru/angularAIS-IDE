@@ -40,14 +40,11 @@ export class MapService {
     private drawControlService: DrawControlService,
     private searchControlService: SearchControlService, // Inject the SearchControlService
     private shapeDataHandlerService: ShapeDataHandlerService,
-  private playbackService: PlaybackService,
-  private iconService: IconService,
-  private shapeService: ShapeService
-
-
+    private playbackService: PlaybackService,
+    private iconService: IconService,
+    private shapeService: ShapeService
   ) {
     this.coordinateControlService = new CoordinateControlService(); // Initialize CoordinateControlService
-
   }
 
   initializeMap(containerId: string, onFilterUpdate: (selectedTypes: string[]) => void): L.Map {
@@ -114,16 +111,21 @@ export class MapService {
     });
   }
 
+  focusOnShip(ship: ShipData): void {
+    const currentTime = moment();
+    const shipTime = moment(ship.timestamp, 'DD-MM-YYYY HH:mm:ss');
 
+    if (currentTime.diff(shipTime, 'hours') < 24) {
+      this.map.setView([ship.lat, ship.lon], 18);
+    } else {
+      console.warn('Ship data is older than 24 hours and will not be displayed:', ship);
+    }
+  }
 
-focusOnShip(ship: ShipData): void {
-  this.map.setView([ship.lat, ship.lon], 18);
-}
-
-// In map.service.ts
-getMapInstance(): L.Map {
-  return this.map;
-}
+  // In map.service.ts
+  getMapInstance(): L.Map {
+    return this.map;
+  }
 
   destroyMap(): void {
     this.map.remove();

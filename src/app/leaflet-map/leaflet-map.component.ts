@@ -42,25 +42,24 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
       next: (data: ShipData[]) => {
         // Log each ship to verify its structure
         // console.log('Loaded data:', data);
-  
+
         const filteredData = this.selectedTypes.length
           ? data.filter(ship => {
               // Ensure 'type' exists and is valid before checking inclusion
               if (ship.type === undefined || ship.type === null) {
-                console.warn(`Ship without type found:`, ship); // Log ships with no type for debugging
-                return false;
+               ship.type = 0;
               }
               return this.selectedTypes.includes(ship.type.toString());
             })
           : data;
-  
+
         this.markerService.addMarkers(this.mapService.getMapInstance(), filteredData, this.selectedTypes);
         this.heatmapService.addHeatMap(this.mapService.getMapInstance(), filteredData);
       },
       error: (error) => console.error('Failed to load data:', error)
     });
   }
-  
+
 
   private onFilterUpdate(selectedTypes: string[]): void {
     this.selectedTypes = selectedTypes;

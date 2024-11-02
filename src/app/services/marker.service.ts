@@ -29,9 +29,9 @@ addMarkers(map: L.Map, data: ShipData[], selectedTypes: string[]): void {
   const filteredData = data.filter((ship) => {
       // Safely handle undefined ship.type
       const shipType = ship.type !== undefined ? ship.type.toString() : '';
-      
+
       // Only include ships of selected types and recent ships within 24 hours
-      return selectedTypes.includes(shipType) && this.isRecent(ship.timestamp);
+      return selectedTypes.includes(shipType);
   });
 
   if (filteredData.length === 0) {
@@ -71,11 +71,7 @@ addMarkers(map: L.Map, data: ShipData[], selectedTypes: string[]): void {
 
 
   // Method to check if the timestamp is within the last 24 hours
-  private isRecent(timestamp: string): boolean {
-    const now = moment();
-    const shipTime = moment(timestamp, 'DD-MM-YYYY HH:mm:ss'); // Adjust format if needed
-    return now.diff(shipTime, 'hours') < 24;
-  }
+
 
   // Method to add a heatmap to the map
   addHeatMap(map: L.Map, data: ShipData[]): void {
