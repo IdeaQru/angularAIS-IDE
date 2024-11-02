@@ -28,7 +28,6 @@ export class SearchControlService {
     formField.style.borderRadius = '12px';
     formField.style.padding = '10px';
     formField.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.158)';
-
     searchInput.style.width = '100%';
     searchInput.style.padding = '8px';
     searchInput.style.border = 'none';
