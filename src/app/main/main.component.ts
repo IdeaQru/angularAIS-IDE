@@ -15,7 +15,11 @@ export class MainComponent implements OnInit {
   circleShipCounts: { [key: string]: number } = {};
   currentSelectedPolygonZone: any = null;
   currentSelectedCircleZone: any = null;
+  isMinimized = false; // State untuk meminimalkan kedua card
 
+  toggleMinimize(): void {
+    this.isMinimized = !this.isMinimized; // Toggle state
+  }
   constructor(
     private polygonZoneHandler: PolygonZoneHandler,
     private circleZoneHandler: CircleZoneHandler,
@@ -92,4 +96,5 @@ export class MainComponent implements OnInit {
     }
     return false;
   }
+
 }

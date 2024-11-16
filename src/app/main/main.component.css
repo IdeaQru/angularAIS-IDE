@@ -1,0 +1,18 @@
+.cardmain.minimized,
+.cardmain2.minimized {
+  height: 50px; /* Tinggi card saat minimized */
+  overflow: hidden; /* Sembunyikan konten */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardmain.minimized i,
+.cardmain2.minimized i {
+  font-size: 24px; /* Ikon tetap terlihat dalam mode minimized */
+}
+
+.cardmain.minimized h1,
+.cardmain2.minimized h1 {
+  font-size: 18px; /* Ukuran teks judul lebih kecil */
+}

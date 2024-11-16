@@ -15,7 +15,19 @@ import { ShipData } from '../services/map.service'; // Import ShipData from map.
 })
 export class LeafletMapComponent implements OnInit, OnDestroy {
   private dataSubscription?: Subscription;
-  private selectedTypes: string[] = []; // Filtered ship types
+  // private selectedTypes: string[] = []; // Filtered ship types
+  private  selectedTypes: string[] = [
+    ...Array.from({ length: 20 }, (_, i) => i.toString()), // 0-19
+    ...Array.from({ length: 40 }, (_, i) => (90 + i).toString()), // 90-129
+    '30', // Fishing
+    '31', '32', // Tug
+    '36', // Pleasure
+    ...Array.from({ length: 10 }, (_, i) => (20 + i).toString()), // Cargo (20-29)
+    ...Array.from({ length: 10 }, (_, i) => (70 + i).toString()), // Cargo (70-79)
+    ...Array.from({ length: 10 }, (_, i) => (80 + i).toString()), // Tanker (80-89)
+    ...Array.from({ length: 20 }, (_, i) => (40 + i).toString()), // Highspeed (40-59)
+    ...Array.from({ length: 10 }, (_, i) => (60 + i).toString()) // Passenger (60-69)
+  ];
 
   constructor(
     private mapService: MapService,
@@ -29,6 +41,9 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
     this.loadAndDisplayData();
 
     // Show the filter popup on initialization
+    // IconService.showOptionsPopup((selectedTypes) => this.onFilterUpdate(selectedTypes));
+  }
+  showFilterOptions(): void {
     IconService.showOptionsPopup((selectedTypes) => this.onFilterUpdate(selectedTypes));
   }
 

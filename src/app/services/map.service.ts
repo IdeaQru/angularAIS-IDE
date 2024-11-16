@@ -40,8 +40,6 @@ export class MapService {
     private drawControlService: DrawControlService,
     private searchControlService: SearchControlService, // Inject the SearchControlService
     private shapeDataHandlerService: ShapeDataHandlerService,
-    private playbackService: PlaybackService,
-    private iconService: IconService,
     private shapeService: ShapeService
   ) {
     this.coordinateControlService = new CoordinateControlService(); // Initialize CoordinateControlService
@@ -58,7 +56,7 @@ export class MapService {
     this.addBaseLayers();
     this.map.addLayer(this.drawnItems);
     this.setupDrawControl();
-    this.playbackService.initializePlayback(this.map);
+    // this.playbackService.initializePlayback(this.map);
     this.addLegend(onFilterUpdate); // Pass onFilterUpdate to addLegend
     this.coordinateControlService.addCoordinateControl(this.map);
     this.searchControlService.addSearchControl(this.map, this.focusOnShip.bind(this));

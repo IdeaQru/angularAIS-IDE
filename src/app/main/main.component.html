@@ -1,46 +1,57 @@
 <div class="row mt-4">
-  <!-- Polygon Zone -->
-  <div class="col-lg-6 col-md-6 mt-4 mb-4">
-    <div class="card z-index-2">
-      <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-        <div class="cardmain active bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1 text-center align-items-center" style="height: 200px;">
-          <i class="fas fa-draw-polygon fs-1" style="color: white;"></i>
-          <h1 class="mb-0 fs-3" style="color: white;">Polygon Zone</h1>
-          <h4 class="text-white mb-0 fs-5">
-            Ships in zone: {{ polygonShipCounts[currentSelectedPolygonZone?._id] || 0 }}
-          </h4>
-          <mat-form-field appearance="fill" style="width: 100%;">
-            <mat-label style="color: black;">Select a polygon zone</mat-label>
-            <mat-select (selectionChange)="onPolygonZoneSelected($event.value)">
-              <mat-option *ngFor="let zone of polygonZones" [value]="zone">{{ zone.properties?.name }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+  <!-- Toggle Minimize Button -->
+  <div class="col-12 text-center">
+    <button class="btn btn-primary mb-3" (click)="toggleMinimize()">
+      <i [class]="isMinimized ? 'fas fa-expand' : 'fas fa-compress'"></i>
+      {{ isMinimized ? 'Expand Monitor Zone' : 'Minimize Monitor Zone' }}
+    </button>
+  </div>
+
+  <!-- Monitor Cards (Only shown if not minimized) -->
+  <div *ngIf="!isMinimized" class="col-12">
+    <div class="row">
+      <!-- Polygon Zone -->
+      <div class="col-lg-6 col-md-6 mt-4 mb-4">
+        <div class="card z-index-2">
+          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+            <div class="cardmain active bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1 text-center align-items-center" style="height: 200px;">
+              <i class="fas fa-draw-polygon fs-1" style="color: white;"></i>
+              <h1 class="mb-0 fs-3" style="color: white;">Polygon Zone</h1>
+              <h4 class="text-white mb-0 fs-5">
+                Ships in zone: {{ polygonShipCounts[currentSelectedPolygonZone?._id] || 0 }}
+              </h4>
+              <mat-form-field appearance="fill" style="width: 100%;">
+                <mat-label style="color: black;">Select a polygon zone</mat-label>
+                <mat-select (selectionChange)="onPolygonZoneSelected($event.value)">
+                  <mat-option *ngFor="let zone of polygonZones" [value]="zone">{{ zone.properties?.name }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Circle Zone -->
+      <div class="col-lg-6 col-md-6 mt-4 mb-4">
+        <div class="card z-index-2">
+          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+            <div class="cardmain2 active bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1 text-center align-items-center" style="height: 200px;">
+              <i class="fas fa-circle-notch fs-1" style="color: white;"></i>
+              <h1 class="mb-0 fs-3" style="color: white;">Circle Zone</h1>
+              <h4 class="text-white mb-0 fs-5">
+                Ships in zone: {{ circleShipCounts[currentSelectedCircleZone?._id] || 0 }}
+              </h4>
+              <mat-form-field appearance="fill" style="width: 100%;">
+                <mat-label style="color: black;">Select a circle zone</mat-label>
+                <mat-select (selectionChange)="onCircleZoneSelected($event.value)">
+                  <mat-option *ngFor="let zone of circleZones" [value]="zone">{{ zone.properties?.name }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Circle Zone -->
-  <div class="col-lg-6 col-md-6 mt-4 mb-4">
-    <div class="card z-index-2">
-      <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
-        <div class="cardmain2 active bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1 text-center align-items-center" style="height: 200px; ">
-          <i class="fas fa-circle-notch fs-1" style="color: white;"></i>
-          <h1 class="mb-0 fs-3" style="color: white;">Circle Zone</h1>
-          <h4 class="text-white mb-0 fs-5" style="color: black;">
-            Ships in zone: {{ circleShipCounts[currentSelectedCircleZone?._id] || 0 }}
-          </h4>
-          <mat-form-field appearance="fill" style="width: 100%;">
-            <mat-label style="color: black;">Select a circle zone</mat-label>
-            <mat-select (selectionChange)="onCircleZoneSelected($event.value)">
-              <mat-option *ngFor="let zone of circleZones" [value]="zone">{{ zone.properties?.name }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Leaflet Map Component -->
   <app-leaflet-map></app-leaflet-map>
 </div>
