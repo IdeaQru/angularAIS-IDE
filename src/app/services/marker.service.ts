@@ -56,21 +56,21 @@ export class MarkerService {
   
         // If marker does not exist, create a new one
         if (!marker) {
-          const directionLine = this.createDirectionLine(ship.lat, ship.lon, shipBearing);
-          this.markersLayer.addLayer(directionLine);
-
           marker = L.marker([ship.lat, ship.lon], { icon }).bindPopup(this.createPopupContent(ship));
           this.markersLayer.addLayer(marker);
+        } else {
+          const directionLine = this.createDirectionLine(ship.lat, ship.lon, shipBearing);
+
+          // Update position and bearing of existing marker
+          marker.setLatLng([ship.lat, ship.lon]);
+          marker.setIcon(icon); // Update icon with new bearing
+          this.markersLayer.addLayer(directionLine);
+          // Optionally, update the popup content with new ship data
+          marker.setPopupContent(this.createPopupContent(ship));
           setTimeout(() => {
             this.markersLayer.removeLayer(directionLine);
           }, 2000);  // Remove after 2 seconds
-          marker.setPopupContent(this.createPopupContent(ship));
         
-        } else {
-
-          this.markersLayer.removeLayer(marker);
-
-      
         }
       }
     });
