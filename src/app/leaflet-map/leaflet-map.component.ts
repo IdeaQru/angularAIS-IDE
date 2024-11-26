@@ -40,8 +40,7 @@ export class LeafletMapComponent implements OnInit, OnDestroy {
     this.mapService.initializeMap('map', (selectedTypes) => this.onFilterUpdate(selectedTypes));
     this.loadAndDisplayData();
 
-    // Show the filter popup on initialization
-    // IconService.showOptionsPopup((selectedTypes) => this.onFilterUpdate(selectedTypes));
+
   }
   showFilterOptions(): void {
     IconService.showOptionsPopup((selectedTypes) => this.onFilterUpdate(selectedTypes));

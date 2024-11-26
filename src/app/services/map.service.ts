@@ -81,7 +81,6 @@ export class MapService {
 
     // Listen for drawing events to trigger the SweetAlert popup
     this.map.on(L.Draw.Event.CREATED, (event: any) => {
-      console.log('Draw event triggered');
       const layer = event.layer;
       this.drawnItems.addLayer(layer);
       // Trigger the SweetAlert popup using ShapeDataHandlerService

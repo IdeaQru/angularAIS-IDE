@@ -7,7 +7,6 @@ import Swal from 'sweetalert2';
 })
 export class IconService {
   private static selectedShipTypes: string[] = [];
-
   private static scriptLegend = `
       <div style="display: flex; align-items: center; margin-top: 16px; padding: 8px; background-color: #f5f5f5; border-radius: 8px;">
         <div style="width: 16px; height: 16px; border-radius: 50%; background-color: yellow; margin-right: 12px;"></div>
